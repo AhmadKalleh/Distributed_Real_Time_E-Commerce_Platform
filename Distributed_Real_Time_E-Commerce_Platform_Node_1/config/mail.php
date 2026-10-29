@@ -121,4 +121,16 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Order Notification Emails
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, every in-app notification (order placed, status changed)
+    | is also emailed to the user through the default mailer above.
+    |
+    */
+
+    'notifications_enabled' => (bool) env('MAIL_NOTIFICATIONS_ENABLED', true),
+
 ];

@@ -36,6 +36,7 @@ class ProductSeeder extends Seeder
                     'name' => $product['name'],
                     'description' => $product['description'],
                     'price' => $product['price'],
+                    'stock' => 50,
                     'is_active' => true,
                     'updated_at' => now(),
                     'created_at' => now(),

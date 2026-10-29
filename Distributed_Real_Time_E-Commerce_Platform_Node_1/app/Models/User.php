@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Modules\Orders\Models\Order;
+use App\Modules\Users\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
+     *
+     * `role` is deliberately not fillable so a client can never promote itself.
      *
      * @var array<int, string>
      */
@@ -40,5 +42,26 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'role' => Role::class,
     ];
+
+    protected $attributes = [
+        'role' => 'Customer',
+    ];
+
+    public function isResponsible(): bool
+    {
+        return $this->role === Role::Responsible;
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role === Role::Customer;
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }
