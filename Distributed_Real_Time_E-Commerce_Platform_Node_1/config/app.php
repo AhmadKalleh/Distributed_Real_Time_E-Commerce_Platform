@@ -195,6 +195,12 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Feature modules (each owns its routes, policies and listeners)...
+         */
+        App\Modules\Orders\OrdersServiceProvider::class,
+        App\Modules\Notifications\NotificationsServiceProvider::class,
+
     ],
 
     /*

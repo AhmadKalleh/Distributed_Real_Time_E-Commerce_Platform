@@ -14,7 +14,7 @@ class DemoUsersSeeder extends Seeder
         $password = Hash::make('password');
 
         $users = [
-            ['name' => 'Demo Customer One', 'email' => 'customer1@example.test'],
+            ['name' => 'Demo Customer One', 'email' => 'ahmadhkalleh@gmail.com'],
             ['name' => 'Demo Customer Two', 'email' => 'customer2@example.test'],
             ['name' => 'Demo Customer Three', 'email' => 'customer3@example.test'],
         ];

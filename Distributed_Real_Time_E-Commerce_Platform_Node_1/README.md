@@ -1,66 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Distributed Real-Time E-Commerce Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Internet Applications course project (2026). An e-commerce backend built with **Laravel 10 / PHP 8.3 / MySQL 8**.
 
-## About Laravel
+This README covers **Requirement 1: API Design & Security**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Quick start (Docker)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+docker compose up --build
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Then open:
 
-## Learning Laravel
+| What | URL |
+|---|---|
+| Swagger UI (interactive docs) | http://localhost:8080/docs |
+| OpenAPI spec | http://localhost:8080/docs/openapi.yaml |
+| Health check | http://localhost:8080/api/v1/health |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+On first start the container waits for MySQL, runs migrations, seeds demo data and generates `APP_KEY` and `JWT_SECRET`. The keys are saved in the `app-storage` volume, so tokens stay valid after a restart. To set your own, export `APP_KEY` / `JWT_SECRET` before `docker compose up`.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Demo accounts
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Role | Email | Password |
+|---|---|---|
+| Responsible (admin) | `responsible@example.test` | `ChangeThisLocalPassword123!` |
+| Customer | `customer1@example.test` | `CustomerDemo123!` |
+| Customer | `customer2@example.test` | `CustomerDemo123!` |
 
-## Laravel Sponsors
+## Requirement 1 checklist
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+| Requirement | Where it is implemented |
+|---|---|
+| **Language / framework** | PHP 8.3, Laravel 10, MySQL 8 |
+| **4 separate modules** | `app/Modules/{Users,Products,Orders,Notifications}`. Each module has its own service provider, routes, controllers, requests, resources and policies. Orders and Notifications talk only through events (`OrderPlaced`, `OrderStatusChanged`). |
+| **Runs fully on Docker** | `Dockerfile`, `docker-compose.yml`, `docker/entrypoint.sh` |
+| **REST: products** | add with images, show, filter by category, pagination: `app/Modules/Products` |
+| **REST: orders** | create, view, change status: `app/Modules/Orders` |
+| **Versioning in the path** | every endpoint is under `/api/v1/...` |
+| **Correct status codes** | 200, 201 + `Location`, 204, 401, 403, 404, 405, 409, 422, 429 |
+| **Unified error format** | `app/Exceptions/Handler.php` (see below) |
+| **Documentation** | OpenAPI 3 spec `docs/openapi.yaml` + Swagger UI at `/docs` (has a "Try it out" button and Bearer auth) |
+| **JWT authentication** | `app/Modules/Users/Services/JwtService.php` (HS256, `exp`/`nbf`/`iss`/`jti`, revocation on logout), guard in `UsersServiceProvider` |
+| **2 roles** | `Customer` sees only their own orders; `Responsible` (admin) is the only role that can change order status or add products: `OrderPolicy`, `ProductPolicy` |
+| **Limit login attempts** | 5 failed attempts per email + IP lock the account for 5 minutes (`429` + `Retry-After`), plus 20 auth requests/min per IP: `AuthController::login`, `UsersServiceProvider` |
+| **Security headers** | `app/Http/Middleware/SecurityHeaders.php`: CSP, HSTS, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, `Cache-Control: no-store` on authenticated responses, `X-Powered-By` removed |
+| **Proof of rejection** | `tests/Feature/AuthorizationProofTest.php` |
 
-### Premium Partners
+## API overview
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+All endpoints are under `/api/v1`. Full details are in Swagger.
 
-## Contributing
+| Method | Path | Who |
+|---|---|---|
+| POST | `/auth/register` | public (always creates a Customer) |
+| POST | `/auth/login` | public (rate limited) |
+| GET | `/auth/me` | any authenticated user |
+| POST | `/auth/logout` | any authenticated user (revokes the token) |
+| GET | `/users` | Responsible |
+| GET | `/categories` | public |
+| GET | `/products?category=&search=&min_price=&max_price=&sort=&page=&per_page=` | public |
+| GET | `/products/{id}` | public |
+| POST | `/products` (multipart, `images[]`) | Responsible |
+| GET | `/orders` | Customer: own orders only. Responsible: all orders |
+| POST | `/orders` | Customer |
+| GET | `/orders/{id}` | owner or Responsible |
+| PATCH | `/orders/{id}/status` | Responsible |
+| GET | `/notifications` | own notifications only |
+| PATCH | `/notifications/{id}/read` | owner only |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Email notifications
 
-## Code of Conduct
+The Notifications module listens to `OrderPlaced` and `OrderStatusChanged`. For each one it saves an in-app notification and emails a copy through SMTP:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- order placed: the customer and every Responsible get an email;
+- status changed: the order owner gets an email.
 
-## Security Vulnerabilities
+The mail settings come from `MAIL_*` in `.env` (Gmail SMTP: `smtp.gmail.com:587`, TLS, with a Google **app password**). Docker Compose reads the same values from the project `.env`. Set `MAIL_NOTIFICATIONS_ENABLED=false` to turn the emails off. If SMTP fails, the error is logged and the API request still succeeds.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Emails are queued. With `QUEUE_CONNECTION=database` you need a worker running: `php artisan queue:work`. Docker uses `sync`, so emails go out immediately there.
 
-## License
+Order lifecycle: `Pending → Confirmed → Shipped → Delivered`. `Pending` and `Confirmed` orders can also go to `Cancelled`, which returns the stock. Any other transition gets `422 INVALID_STATUS_TRANSITION`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Unified error format
+
+```json
+{
+  "error": {
+    "status": 422,
+    "code": "VALIDATION_ERROR",
+    "message": "The given data was invalid.",
+    "details": { "email": ["The email field is required."] }
+  }
+}
+```
+
+Codes: `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `METHOD_NOT_ALLOWED`, `VALIDATION_ERROR`, `INVALID_CREDENTIALS`, `TOO_MANY_LOGIN_ATTEMPTS`, `TOO_MANY_REQUESTS`, `INSUFFICIENT_STOCK`, `INVALID_STATUS_TRANSITION`, `INTERNAL_ERROR`.
+
+## Proof: unauthorized access is rejected
+
+Run the tests (needs PHP 8.1+ with `pdo_sqlite`):
+
+```bash
+composer install
+php artisan test
+```
+
+`AuthorizationProofTest` checks that:
+
+- customer B gets **403** when opening customer A's order, and their order list contains only their own orders;
+- a customer gets **403** when changing order status, even on their own order;
+- a customer gets **403** when adding products or listing users;
+- a user gets **403** when marking someone else's notification as read (this applies to the admin too);
+- requests with no token or an invalid token get **401**;
+- a token whose payload was edited to claim `Responsible` gets **401** because the signature check fails;
+- an `alg: none` token gets **401**.
+
+`AuthTest` covers login lockout, the per-IP rate limit, logout revocation, expired tokens, and that a demoted admin loses access right away (the role is read from the database on every request, not trusted from the token).
+
+### Manual demo with curl
+
+```bash
+# 1. Log in as two customers and the admin
+C1=$(curl -s localhost:8080/api/v1/auth/login -H 'Content-Type: application/json' -d '{"email":"customer1@example.test","password":"CustomerDemo123!"}' | sed -E 's/.*"access_token":"([^"]+)".*/\1/')
+C2=$(curl -s localhost:8080/api/v1/auth/login -H 'Content-Type: application/json' -d '{"email":"customer2@example.test","password":"CustomerDemo123!"}' | sed -E 's/.*"access_token":"([^"]+)".*/\1/')
+
+# 2. Customer 1 places an order (note the id)
+curl -s localhost:8080/api/v1/orders -H "Authorization: Bearer $C1" -H 'Content-Type: application/json' -d '{"items":[{"product_id":1,"quantity":1}]}'
+
+# 3. Customer 2 tries to read it  -> 403 FORBIDDEN
+curl -i localhost:8080/api/v1/orders/1 -H "Authorization: Bearer $C2" -H 'Accept: application/json'
+
+# 4. Customer 1 tries to mark it delivered  -> 403 FORBIDDEN
+curl -i -X PATCH localhost:8080/api/v1/orders/1/status -H "Authorization: Bearer $C1" -H 'Content-Type: application/json' -d '{"status":"Delivered"}'
+```
+
+## Project layout
+
+```
+app/
+  Exceptions/Handler.php          unified JSON error format
+  Http/Middleware/SecurityHeaders.php
+  Http/Middleware/EnsureUserHasRole.php
+  Modules/
+    Users/          auth (JWT), roles, user listing
+    Products/       categories, products, image upload
+    Orders/         order placement, stock reservation, status lifecycle, events
+    Notifications/  listens to order events, per-user inbox
+docs/openapi.yaml   API documentation
+docker/             container entrypoint
+tests/Feature/      authorization proof and API tests
+```
+
+## Running without Docker
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+# set DB_* and JWT_SECRET in .env
+php artisan migrate --seed
+php artisan storage:link
+php artisan serve
+```

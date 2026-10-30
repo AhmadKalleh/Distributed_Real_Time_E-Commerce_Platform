@@ -10,7 +10,7 @@ final class ProductPolicy
 {
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, [UserRole::CUSTOMER->value, UserRole::RESPONSIBLE->value], true);
+        return true;
     }
 
     public function create(User $user): bool

@@ -10,7 +10,7 @@ class ResponsibleUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('SEED_RESPONSIBLE_EMAIL', 'responsible@example.test');
+        $email = env('SEED_RESPONSIBLE_EMAIL', 'mohahmk03@gmail.com');
 
         DB::table('users')->updateOrInsert(
             ['email' => $email],

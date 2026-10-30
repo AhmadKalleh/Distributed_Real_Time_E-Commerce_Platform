@@ -39,6 +39,8 @@ final class ProductController
                 'total' => $paginator->total(),
                 'last_page' => $paginator->lastPage(),
                 'has_more_pages' => $paginator->hasMorePages(),
+                'next_page_url' => $paginator->nextPageUrl(),
+                'prev_page_url' => $paginator->previousPageUrl(),
             ],
         ], 'Products retrieved successfully.');
     }

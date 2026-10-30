@@ -1,7 +1,6 @@
 <?php
 
 use App\Modules\Catalog\Domain\Entities\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Identity\Presentation\Http\Controllers\AuthController;
 use App\Modules\Catalog\Presentation\Http\Controllers\CategoryController;
@@ -11,13 +10,10 @@ use App\Modules\Catalog\Presentation\Http\Controllers\ProductController;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Feature endpoints are registered by each module under app/Modules/*
+| with the /api/v1 prefix. Only cross-cutting routes live here.
 |
 */
-
-
 
 Route::prefix('v1')->group(function (): void {
 

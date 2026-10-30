@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class RouteServiceProvider extends ServiceProvider
@@ -35,6 +36,22 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+
+        $modulesPath = app_path('Modules');
+
+        if (File::isDirectory($modulesPath)) {
+            $modules = File::directories($modulesPath);
+
+            foreach ($modules as $module) {
+                $routesFile = $module . '/routes.php';
+
+                if (File::exists($routesFile)) {
+                    Route::middleware('api')
+                        ->prefix('api')
+                        ->group($routesFile);
+                }
+            }
+        }
     }
 
     /**
