@@ -2,7 +2,7 @@
 
 namespace App\Modules\Notifications\Policies;
 
-use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Notifications\Models\UserNotification;
 
 class UserNotificationPolicy

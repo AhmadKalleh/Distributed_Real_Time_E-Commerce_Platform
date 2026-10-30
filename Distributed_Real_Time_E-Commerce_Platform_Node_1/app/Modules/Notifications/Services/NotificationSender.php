@@ -2,7 +2,7 @@
 
 namespace App\Modules\Notifications\Services;
 
-use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Notifications\Mail\UserNotificationMail;
 use App\Modules\Notifications\Models\UserNotification;
 use Illuminate\Support\Facades\Mail;

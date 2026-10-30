@@ -1,79 +1,71 @@
 <?php
-
 namespace App\Modules\Orders\Services;
-
-use App\Exceptions\ApiException;
-use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Orders\Enums\OrderStatus;
 use App\Modules\Orders\Events\OrderPlaced;
 use App\Modules\Orders\Events\OrderStatusChanged;
 use App\Modules\Orders\Models\Order;
-use App\Modules\Products\Models\Product;
-use Illuminate\Support\Facades\DB;
+use App\Modules\Catalog\Domain\Entities\Product;
+use App\Modules\Orders\Exceptions\InsufficientStockException;
+use App\Modules\Orders\Exceptions\InvalidStatusTransitionException;
+use App\Modules\Orders\Repositories\OrderRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderService
 {
-    /**
-     * Prices always come from the database, never from the client.
-     *
-     * @param  array<int, array{product_id: int, quantity: int}>  $items
-     */
+    public function __construct(
+        protected OrderRepositoryInterface $orderRepository
+    ) {}
+
+    public function getPaginatedOrders(User $user, array $validated): LengthAwarePaginator
+    {
+        return $this->orderRepository->getPaginatedOrders($user, $validated);
+    }
+
     public function place(User $customer, array $items): Order
     {
-        // Merge duplicate lines for the same product.
+        // 1. دمج الكميات للمنتجات المتكررة (Business Logic)
         $quantities = [];
         foreach ($items as $item) {
             $quantities[$item['product_id']] = ($quantities[$item['product_id']] ?? 0) + $item['quantity'];
         }
 
-        $order = DB::transaction(function () use ($customer, $quantities) {
-            // Lock the rows so two concurrent orders cannot oversell the same stock.
-            $products = Product::whereIn('id', array_keys($quantities))
-                ->orderBy('id')
-                ->lockForUpdate()
-                ->get()
-                ->keyBy('id');
+        // 2. التحقق من المخزون والأسعار
+        $products = Product::whereIn('id', array_keys($quantities))
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
 
-            $problems = [];
-            foreach ($quantities as $productId => $quantity) {
-                $product = $products->get($productId);
-
-                if (! $product || ! $product->is_active) {
-                    $problems[] = ['product_id' => $productId, 'reason' => 'Product is not available.'];
-                } elseif ($product->stock < $quantity) {
-                    $problems[] = ['product_id' => $productId, 'reason' => "Only {$product->stock} left in stock.", 'available' => $product->stock];
-                }
+        $reason = '';
+        foreach ($quantities as $productId => $quantity) {
+            $product = $products->get($productId);
+            $productName = $product ? $product->name : "Product #{$productId}";
+            if (! $product || ! $product->is_active) {
+                $reason = "The product '{$productName}' is currently unavailable or inactive.";
+                break;
+            } elseif ($product->stock < $quantity) {
+                $reason = "The product '{$productName}' has only {$product->stock} items in stock, but you requested {$quantity}.";
+                break;
             }
+        }
 
-            if ($problems !== []) {
-                throw new ApiException(409, 'INSUFFICIENT_STOCK', 'Some items cannot be ordered.', ['items' => $problems]);
-            }
+        if ($reason !== '') {
+            throw new InsufficientStockException($reason);
+        }
 
-            // Sum in integer cents to avoid floating point rounding errors.
-            $totalCents = 0;
-            foreach ($quantities as $productId => $quantity) {
-                $totalCents += (int) round($products[$productId]->price * 100) * $quantity;
-            }
+        // 3. حساب المجموع بالقروش لتجنب أخطاء الفاصلة العائمة
+        $totalCents = 0;
+        foreach ($quantities as $productId => $quantity) {
+            $totalCents += (int) round($products[$productId]->price * 100) * $quantity;
+        }
 
-            $order = $customer->orders()->create([
-                'status' => OrderStatus::Pending,
-                'total_amount' => number_format($totalCents / 100, 2, '.', ''),
-            ]);
+        $totalAmount = $totalCents / 100;
 
-            foreach ($quantities as $productId => $quantity) {
-                $product = $products[$productId];
-                $product->decrement('stock', $quantity);
+        // 4. تفويض حفظ الطلب للـ Repository
+        $order = $this->orderRepository->createOrder($customer, $totalAmount, $quantities, $products);
 
-                $order->items()->create([
-                    'product_id' => $productId,
-                    'quantity' => $quantity,
-                    'unit_price' => $product->price,
-                ]);
-            }
-
-            return $order;
-        });
-
+        // 5. إطلاق الحدث بعد النجاح
         OrderPlaced::dispatch($order);
 
         return $order;
@@ -81,31 +73,26 @@ class OrderService
 
     public function changeStatus(Order $order, OrderStatus $next): Order
     {
-        [$order, $previous] = DB::transaction(function () use ($order, $next) {
-            $order = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
-            $current = $order->status;
+        $current = $order->status;
 
-            if (! $current->canTransitionTo($next)) {
-                throw new ApiException(422, 'INVALID_STATUS_TRANSITION', "Cannot change order status from {$current->value} to {$next->value}.", [
-                    'current_status' => $current->value,
-                    'allowed' => array_map(fn (OrderStatus $s) => $s->value, $current->allowedTransitions()),
-                ]);
-            }
+        // التحقق من صحة تغير الحالة (Business Logic)
+        if (! $current->canTransitionTo($next)) {
+            throw new InvalidStatusTransitionException(
+                currentStatus: $current->value,
+                allowed: array_map(
+                    fn (OrderStatus $s) => $s->value,
+                    $current->allowedTransitions()
+                ),
+                message: "Cannot change order status from {$current->value} to {$next->value}."
+            );
+        }
 
-            if ($next === OrderStatus::Cancelled) {
-                // Return the reserved stock.
-                foreach ($order->items as $item) {
-                    Product::whereKey($item->product_id)->increment('stock', $item->quantity);
-                }
-            }
+        // تفويض تحديث الحالة وإعادة المخزون للـ Repository
+        $updatedOrder = $this->orderRepository->updateStatus($order, $next);
 
-            $order->update(['status' => $next]);
+        // إطلاق الحدث
+        OrderStatusChanged::dispatch($updatedOrder, $current, $next);
 
-            return [$order, $current];
-        });
-
-        OrderStatusChanged::dispatch($order, $previous, $next);
-
-        return $order;
+        return $updatedOrder;
     }
 }

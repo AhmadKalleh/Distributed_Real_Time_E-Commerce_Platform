@@ -2,7 +2,7 @@
 
 namespace App\Modules\Orders\Models;
 
-use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Orders\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

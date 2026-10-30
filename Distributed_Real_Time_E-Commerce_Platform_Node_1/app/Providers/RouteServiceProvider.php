@@ -7,6 +7,8 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,22 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+
+        $modulesPath = app_path('Modules');
+
+        if (File::isDirectory($modulesPath)) {
+            $modules = File::directories($modulesPath);
+
+            foreach ($modules as $module) {
+                $routesFile = $module . '/routes.php';
+
+                if (File::exists($routesFile)) {
+                    Route::middleware('api')
+                        ->prefix('api')
+                        ->group($routesFile);
+                }
+            }
+        }
     }
 
     /**
@@ -41,8 +59,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting(): void
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(config('security.api_per_minute'))->by($request->user()?->id ?: $request->ip());
+        RateLimiter::for('login', function (Request $request) {
+            $email = Str::lower(
+                trim((string) $request->input('email'))
+            );
+
+            return Limit::perMinute(5)->by(
+                $email . '|' . $request->ip()
+            );
         });
     }
 }

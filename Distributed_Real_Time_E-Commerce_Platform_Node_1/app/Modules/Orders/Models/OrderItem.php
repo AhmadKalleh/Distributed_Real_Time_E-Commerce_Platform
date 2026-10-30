@@ -2,7 +2,8 @@
 
 namespace App\Modules\Orders\Models;
 
-use App\Modules\Products\Models\Product;
+
+use App\Modules\Catalog\Domain\Entities\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
