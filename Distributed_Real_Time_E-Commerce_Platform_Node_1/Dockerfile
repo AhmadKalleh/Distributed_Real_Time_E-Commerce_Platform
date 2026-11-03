@@ -19,8 +19,11 @@ RUN composer dump-autoload --no-dev --optimize --no-scripts
 FROM php:8.3-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends default-mysql-client \
+    && apt-get install -y --no-install-recommends default-mysql-client libstdc++6 $PHPIZE_DEPS \
+    && pecl install grpc \
+    && docker-php-ext-enable grpc \
     && docker-php-ext-install pdo_mysql opcache \
+    && apt-get purge -y --auto-remove $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
 # Serve Laravel's public/ directory, hide server details.
