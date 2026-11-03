@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'inventory' => [
+        'grpc_target' => env('INVENTORY_GRPC_TARGET', '127.0.0.1:50051'),
+        'timeout_ms' => (int) env('INVENTORY_GRPC_TIMEOUT_MS', 3000),
+        'force_order_save_failure' => (bool) env('INVENTORY_TEST_FAIL_AFTER_RESERVE', false),
+    ],
+
 ];
