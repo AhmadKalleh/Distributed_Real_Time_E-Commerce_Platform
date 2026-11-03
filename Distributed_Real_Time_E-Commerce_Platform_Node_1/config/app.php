@@ -200,6 +200,8 @@ return [
          */
         App\Modules\Orders\OrdersServiceProvider::class,
         App\Modules\Notifications\NotificationsServiceProvider::class,
+        App\Modules\Catalog\CatalogServiceProvider::class,
+        App\Modules\Identity\IdentityServiceProvider::class,
 
     ],
 

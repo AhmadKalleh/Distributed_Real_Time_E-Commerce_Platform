@@ -9,13 +9,12 @@ use App\Modules\Catalog\Application\DTOs\Products\ListProductsDTO;
 use App\Modules\Catalog\Application\DTOs\Products\ShowProductDTO;
 use App\Modules\Catalog\Application\UseCases\Products\ListProductsUseCase;
 use App\Modules\Catalog\Application\UseCases\Products\ShowProductUseCase;
-use App\Modules\Catalog\Domain\Entities\Product;
 use App\Modules\Catalog\Presentation\Http\Requests\ListProductsRequest;
 use App\Modules\Catalog\Presentation\Http\Requests\StoreProductRequest;
 use App\Modules\Catalog\Presentation\Http\Resources\ProductResource;
+use App\Modules\Orders\Application\Contracts\InventoryGatewayInterface;
 use App\Shared\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use App\Modules\Orders\Services\InventoryGrpcClient;
 
 final class ProductController
 {
@@ -46,7 +45,7 @@ final class ProductController
         ], 'Products retrieved successfully.');
     }
 
-    public function show(int $product, ShowProductUseCase $useCase, InventoryGrpcClient $inventory): JsonResponse
+    public function show(int $product, ShowProductUseCase $useCase, InventoryGatewayInterface $inventory): JsonResponse
     {
         $found = $useCase->execute(new ShowProductDTO($product));
         $availableQuantity = $inventory->getAvailableQuantity($found->id);

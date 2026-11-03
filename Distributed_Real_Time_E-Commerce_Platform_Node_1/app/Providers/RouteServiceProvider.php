@@ -43,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider
             $modules = File::directories($modulesPath);
 
             foreach ($modules as $module) {
-                $routesFile = $module . '/routes.php';
+                $routesFile = $module . '/Presentation/Http/routes.php';
 
                 if (File::exists($routesFile)) {
                     Route::middleware('api')
