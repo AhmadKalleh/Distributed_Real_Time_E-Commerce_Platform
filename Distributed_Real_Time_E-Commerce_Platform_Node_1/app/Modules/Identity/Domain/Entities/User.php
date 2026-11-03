@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Modules\Identity\Domain\Enums\UserRole;
-use App\Modules\Orders\Models\Order;
+use App\Modules\Orders\Domain\Entities\Order;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements JWTSubject

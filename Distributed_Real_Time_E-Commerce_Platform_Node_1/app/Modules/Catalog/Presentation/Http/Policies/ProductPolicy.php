@@ -15,7 +15,7 @@ final class ProductPolicy
 
     public function create(User $user): bool
     {
-        return $user->role === UserRole::RESPONSIBLE->value;
+        return $user->isResponsible();
     }
 
 

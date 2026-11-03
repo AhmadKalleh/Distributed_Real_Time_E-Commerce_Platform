@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package inventory.v1;
 
-option php_namespace = "App\\Modules\\Orders\\Grpc\\Generated";
-option php_metadata_namespace = "App\\Modules\\Orders\\Grpc\\Generated\\GPBMetadata";
+option php_namespace = "App\\Modules\\Orders\\Infrastructure\\Grpc\\Generated";
+option php_metadata_namespace = "App\\Modules\\Orders\\Infrastructure\\Grpc\\Generated\\GPBMetadata";
 
 service InventoryService {
   rpc GetProductQuantity (ProductQuantityRequest) returns (ProductQuantityResponse);

@@ -6,6 +6,7 @@ use App\Modules\Catalog\Application\Contracts\ProductRepositoryInterface;
 use App\Modules\Catalog\Application\DTOs\Products\StoredImageDTO;
 use App\Modules\Catalog\Domain\Entities\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class EloquentProductRepository implements ProductRepositoryInterface
@@ -60,6 +61,21 @@ final class EloquentProductRepository implements ProductRepositoryInterface
             ->find($id);
     }
 
+    /**
+     * Load only the fields required by cross-module product lookups.
+     * No category or image relations are loaded for an order placement.
+     *
+     * @param list<int> $ids
+     */
+    public function findByIds(array $ids): Collection
+    {
+        return Product::query()
+            ->select(['id', 'name', 'price', 'is_active'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+    }
+
     public function slugExists(string $slug): bool
     {
         return Product::query()->where('slug', $slug)->exists();
@@ -83,7 +99,7 @@ final class EloquentProductRepository implements ProductRepositoryInterface
                 )
             ));
 
-            return $product->load('category:id,name,slug'); 
+            return $product->load('category:id,name,slug');
         });
     }
 

@@ -4,6 +4,7 @@ namespace App\Modules\Catalog\Application\Contracts;
 
 use App\Modules\Catalog\Domain\Entities\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 interface ProductRepositoryInterface
 {
@@ -11,4 +12,6 @@ interface ProductRepositoryInterface
     public function findById(int $id): ?Product;
     public function slugExists(string $slug): bool;
     public function create(array $attributes, array $images = []): Product;
+    /** @param list<int> $ids */
+    public function findByIds(array $ids): Collection;
 }
