@@ -27,17 +27,28 @@ class OrderRepository implements OrderRepositoryInterface
             ->withQueryString();
     }
 
-    public function createOrder(User $customer, float $totalAmount, array $quantities, Collection $products): Order
-    {
-        return DB::transaction(function () use ($customer, $totalAmount, $quantities, $products) {
+    public function createOrder(
+        User $customer,
+        float $totalAmount,
+        array $quantities,
+        Collection $products,
+        string $reservationReference
+    ): Order {
+        return DB::transaction(function () use (
+            $customer,
+            $totalAmount,
+            $quantities,
+            $products,
+            $reservationReference
+        ) {
             $order = $customer->orders()->create([
                 'status' => OrderStatus::Pending,
                 'total_amount' => number_format($totalAmount, 2, '.', ''),
+                'inventory_reservation_reference' => $reservationReference,
             ]);
 
             foreach ($quantities as $productId => $quantity) {
-                $product = $products[$productId];
-                $product->decrement('stock', $quantity);
+                $product = $products->get($productId);
 
                 $order->items()->create([
                     'product_id' => $productId,
@@ -59,16 +70,9 @@ class OrderRepository implements OrderRepositoryInterface
     {
         return DB::transaction(function () use ($order, $next) {
             $lockedOrder = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
-
-            if ($next === OrderStatus::Cancelled) {
-                foreach ($lockedOrder->items as $item) {
-                    Product::whereKey($item->product_id)->increment('stock', $item->quantity);
-                }
-            }
-
             $lockedOrder->update(['status' => $next]);
 
-            return $lockedOrder;
+            return $lockedOrder->fresh(['items.product']);
         });
     }
 }

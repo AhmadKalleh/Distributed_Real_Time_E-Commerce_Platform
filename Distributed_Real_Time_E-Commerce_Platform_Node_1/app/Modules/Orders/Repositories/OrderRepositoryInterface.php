@@ -11,8 +11,14 @@ interface OrderRepositoryInterface
 {
     public function getPaginatedOrders(User $user, array $validated): LengthAwarePaginator;
 
-    public function createOrder(User $customer, float $totalAmount, array $quantities, Collection $products): Order;
-
+    public function createOrder(
+        User $customer,
+        float $totalAmount,
+        array $quantities,
+        Collection $products,
+        string $reservationReference
+    ): Order;
+    
     public function updateStatus(Order $order, OrderStatus $next): Order;
 
     public function lockAndFind(int $orderId): Order;

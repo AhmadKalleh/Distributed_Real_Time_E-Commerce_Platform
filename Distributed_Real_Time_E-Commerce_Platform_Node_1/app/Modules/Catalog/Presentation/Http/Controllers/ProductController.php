@@ -15,6 +15,7 @@ use App\Modules\Catalog\Presentation\Http\Requests\StoreProductRequest;
 use App\Modules\Catalog\Presentation\Http\Resources\ProductResource;
 use App\Shared\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Orders\Services\InventoryGrpcClient;
 
 final class ProductController
 {
@@ -45,14 +46,15 @@ final class ProductController
         ], 'Products retrieved successfully.');
     }
 
-    public function show(int $product, ShowProductUseCase $useCase): JsonResponse
+    public function show(int $product, ShowProductUseCase $useCase, InventoryGrpcClient $inventory): JsonResponse
     {
         $found = $useCase->execute(new ShowProductDTO($product));
+        $availableQuantity = $inventory->getAvailableQuantity($found->id);
 
-        return ApiResponse::success(
-            ProductResource::make($found)->resolve(),
-            'Product retrieved successfully.'
-        );
+        return ApiResponse::success([
+            'product' => ProductResource::make($found)->resolve(),
+            'available_quantity' => $availableQuantity,
+        ], 'Product retrieved successfully.');
     }
 
     public function store(StoreProductRequest $request,CreateProductUseCase $useCase): JsonResponse
