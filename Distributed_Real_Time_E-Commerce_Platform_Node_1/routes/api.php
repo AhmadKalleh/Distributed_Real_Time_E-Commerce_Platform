@@ -1,7 +1,10 @@
 <?php
 
+use App\Modules\Catalog\Domain\Entities\Product;
 use Illuminate\Support\Facades\Route;
-
+use App\Modules\Identity\Presentation\Http\Controllers\AuthController;
+use App\Modules\Catalog\Presentation\Http\Controllers\CategoryController;
+use App\Modules\Catalog\Presentation\Http\Controllers\ProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -12,6 +15,37 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('v1/health', fn () => response()->json([
-    'data' => ['status' => 'ok', 'time' => now()->toIso8601String()],
-]));
+Route::prefix('v1')->group(function (): void {
+
+    // Public authentication route
+    Route::post('/auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:login');
+
+    Route::middleware('auth:api')->group(function (): void {
+
+        Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+        // Categories
+        Route::get('/categories', [
+            CategoryController::class,
+            'index',
+        ]);
+
+        // Products
+        Route::get('/products', [
+            ProductController::class,
+            'index',
+        ])->can('viewAny', Product::class);
+
+        Route::get('/products/{product}', [
+            ProductController::class,
+            'show',
+        ])->can('viewAny', Product::class);
+
+        Route::post('/products', [
+            ProductController::class,
+            'store',
+        ])->can('create', Product::class);
+
+    });
+});

@@ -5,6 +5,11 @@ cd /var/www/html
 
 mkdir -p storage/app/public storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
 
+if ! php -r 'require "vendor/autoload.php"; exit(extension_loaded("grpc") && class_exists("Grpc\\ChannelCredentials") && class_exists("Google\\Protobuf\\Internal\\Message") ? 0 : 1);'; then
+    echo "Required gRPC runtime dependencies are missing (ext-grpc, grpc/grpc, google/protobuf)." >&2
+    exit 1
+fi
+
 # Generate APP_KEY / JWT_SECRET on first start if not provided, and keep them in
 # the storage volume so tokens stay valid across container restarts.
 SECRETS_DIR=storage/app/.secrets

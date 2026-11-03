@@ -2,7 +2,7 @@
 
 namespace App\Modules\Orders\Policies;
 
-use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Orders\Models\Order;
 
 class OrderPolicy

@@ -17,8 +17,8 @@ class NotificationResource extends JsonResource
             'body' => $this->body,
             // Not called "data": a top-level "data" key stops Laravel wrapping the resource.
             'payload' => $this->data,
-            'read_at' => $this->read_at?->toIso8601String(),
-            'created_at' => $this->created_at?->toIso8601String(),
+            'read_at' => $this->read_at?->format('Y-m-d'),
+            'created_at' => $this->created_at?->format('Y-m-d'),
         ];
     }
 }

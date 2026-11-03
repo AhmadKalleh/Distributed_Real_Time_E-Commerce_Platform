@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Damascus',
 
     /*
     |--------------------------------------------------------------------------
@@ -198,8 +198,6 @@ return [
         /*
          * Feature modules (each owns its routes, policies and listeners)...
          */
-        App\Modules\Users\UsersServiceProvider::class,
-        App\Modules\Products\ProductsServiceProvider::class,
         App\Modules\Orders\OrdersServiceProvider::class,
         App\Modules\Notifications\NotificationsServiceProvider::class,
 

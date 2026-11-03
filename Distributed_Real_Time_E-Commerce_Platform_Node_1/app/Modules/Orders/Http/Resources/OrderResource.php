@@ -23,8 +23,9 @@ class OrderResource extends JsonResource
                 'unit_price' => $item->unit_price,
                 'line_total' => number_format($item->unit_price * $item->quantity, 2, '.', ''),
             ])),
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+
+            'created_at' => $this->created_at?->format('Y-m-d'),
+            'updated_at' => $this->updated_at?->format('Y-m-d'),
         ];
     }
 }

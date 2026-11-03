@@ -40,8 +40,6 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-
-        // Stateless JWT guard, driver registered in UsersServiceProvider.
         'api' => [
             'driver' => 'jwt',
             'provider' => 'users',
@@ -68,7 +66,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Modules\Identity\Domain\Entities\User::class,
         ],
 
         // 'users' => [

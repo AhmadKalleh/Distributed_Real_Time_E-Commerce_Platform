@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Modules\Notifications\Listeners;
-
-use App\Models\User;
 use App\Modules\Notifications\Services\NotificationSender;
 use App\Modules\Orders\Events\OrderPlaced;
-use App\Modules\Users\Enums\Role;
-
+use App\Modules\Identity\Domain\Enums\UserRole;
+use App\Modules\Identity\Domain\Entities\User;
 class NotifyOnOrderPlaced
 {
     public function __construct(private readonly NotificationSender $sender)
@@ -26,7 +24,7 @@ class NotifyOnOrderPlaced
             $data,
         );
 
-        User::where('role', Role::Responsible)->get()->each(fn (User $admin) => $this->sender->send(
+        User::where('role', UserRole::RESPONSIBLE)->get()->each(fn (User $admin) => $this->sender->send(
             $admin,
             'order.placed',
             "New order #{$order->id}",

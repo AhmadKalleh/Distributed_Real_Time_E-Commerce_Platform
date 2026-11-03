@@ -2,7 +2,7 @@
 
 namespace App\Modules\Orders\Models;
 
-use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Orders\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'status', 'total_amount'];
+    protected $fillable = ['user_id', 'status', 'total_amount','inventory_reservation_reference'];
 
     protected $casts = [
         'status' => OrderStatus::class,

@@ -11,8 +11,9 @@ use App\Modules\Orders\Models\Order;
 use App\Modules\Orders\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Validation\Rule;
+use App\Shared\Http\Responses\ApiResponse;
+use Illuminate\Support\Js;
 
 class OrderController extends Controller
 {
@@ -20,50 +21,70 @@ class OrderController extends Controller
     {
     }
 
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Order::class);
 
         $validated = $request->validate([
-            'status' => ['nullable', Rule::enum(OrderStatus::class)],
+            'status'   => ['nullable', Rule::enum(OrderStatus::class)],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
         ]);
 
-        $user = $request->user();
+        // استدعاء الخدمة لجلب البيانات
+        $orders = $this->orders->getPaginatedOrders($request->user(), $validated);
 
-        $orders = Order::query()
-            // Ownership filter: customers only ever see rows where user_id is their own id.
-            ->when(! $user->isResponsible(), fn ($q) => $q->where('user_id', $user->id))
-            ->when($validated['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
-            ->with('items.product')
-            ->latest('id')
-            ->paginate($validated['per_page'] ?? 15)
-            ->withQueryString();
+        // التحقق مما إذا كانت الطلبات فارغة لتخصيص الرسالة
+        $message = $orders->isEmpty()
+            ? 'No orders found.'
+            : 'Orders retrieved successfully.';
 
-        return OrderResource::collection($orders);
+        return ApiResponse::success([
+            'orders' => OrderResource::collection($orders),
+            'pagination' => [
+                'current_page' => $orders->currentPage(),
+                'last_page'    => $orders->lastPage(),
+                'per_page'     => $orders->perPage(),
+                'total'        => $orders->total(),
+                'has_more'     => $orders->hasMorePages(),
+                'next_page_url' => $orders->nextPageUrl(),     // رابط الصفحة التالية (سيكون null إذا كانت الأخيرة)
+                'prev_page_url' => $orders->previousPageUrl(), // رابط الصفحة السابقة (سيكون null إذا كانت الأولى)
+            ]
+        ], $message);
     }
 
     public function store(StoreOrderRequest $request): JsonResponse
     {
         $order = $this->orders->place($request->user(), $request->validated('items'));
+        $order->load('items.product');
 
-        return (new OrderResource($order->load('items.product')))
-            ->response()
-            ->setStatusCode(201)
-            ->header('Location', url("/api/v1/orders/{$order->id}"));
+        return ApiResponse::success(
+            new OrderResource($order),
+            'Order created successfully.',
+            201 // تحديد الكود 201
+        )->header('Location', url("/api/v1/orders/{$order->id}"));
     }
 
-    public function show(Order $order): OrderResource
+    public function show(Order $order): JsonResponse
     {
         $this->authorize('view', $order);
 
-        return new OrderResource($order->load('items.product'));
+        // تحميل العلاقات المطلوبة
+        $order->load('items.product');
+
+        return ApiResponse::success(
+            new OrderResource($order),
+            'Order retrieved successfully.'
+        );
+
     }
 
-    public function updateStatus(UpdateOrderStatusRequest $request, Order $order): OrderResource
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order): JsonResponse
     {
         $order = $this->orders->changeStatus($order, OrderStatus::from($request->validated('status')));
 
-        return new OrderResource($order->load('items.product'));
+        return ApiResponse::success(
+            new OrderResource($order->load('items.product')),
+            'Order status updated successfully.'
+        );
     }
 }
