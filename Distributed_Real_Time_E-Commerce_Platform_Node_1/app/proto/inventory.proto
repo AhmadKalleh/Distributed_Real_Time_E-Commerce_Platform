@@ -7,6 +7,7 @@ option php_metadata_namespace = "App\\Modules\\Orders\\Infrastructure\\Grpc\\Gen
 
 service InventoryService {
   rpc GetProductQuantity (ProductQuantityRequest) returns (ProductQuantityResponse);
+  rpc InitializeProductStock (StockItem) returns (StockOperationResponse);
   rpc ReserveStock (ReserveStockRequest) returns (StockOperationResponse);
   rpc ReleaseStock (ReleaseStockRequest) returns (StockOperationResponse);
 }

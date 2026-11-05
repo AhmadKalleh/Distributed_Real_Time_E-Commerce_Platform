@@ -21,6 +21,22 @@ class InventoryRepository {
     };
   }
 
+  async initializeProductStock(productId, quantity) {
+    try {
+      await this.pool.execute(
+        'INSERT INTO inventory_items (product_id, available_quantity) VALUES (?, ?)',
+        [productId, quantity],
+      );
+    } catch (error) {
+      if (error?.code === 'ER_DUP_ENTRY') {
+        return { success: false, message: `Inventory already exists for product ${productId}.` };
+      }
+      throw error;
+    }
+
+    return { success: true, message: 'Initial product quantity added to inventory.' };
+  }
+
   async reserveStock(reference, inputItems) {
   
     if (!reference || reference.length > 64 || inputItems.length === 0) {

@@ -18,6 +18,7 @@ final class StoreProductRequest extends FormRequest
             'name' => ['required', 'string', 'max:180'],
             'description' => ['nullable', 'string', 'max:10000'],
             'price' => ['required', 'numeric', 'min:0', 'decimal:0,2'],
+            'quantity' => ['required', 'integer', 'min:0', 'max:2147483647'],
             'is_active' => ['sometimes', 'boolean'],
             'images' => ['sometimes', 'array', 'max:8'],
             'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],

@@ -12,13 +12,14 @@ This is the independent Inventory service required by the second assignment. It 
 
 It does not connect to or share the Orders database. `product_id` is an external identifier from the Catalog module; no foreign key crosses service databases.
 
-## The three gRPC methods
+## The gRPC methods
 
 The single contract is `proto/inventory.proto`:
 
 1. `GetProductQuantity`: returns whether the product exists in Inventory and its current available quantity.
-2. `ReserveStock`: receives **all** requested product IDs and quantities in one RPC. It checks and reserves the entire set atomically.
-3. `ReleaseStock`: returns all quantities attached to one reservation reference. Repeated release calls are safe and do not add stock twice.
+2. `InitializeProductStock`: adds the initial quantity for a newly created Catalog product. It refuses to overwrite an existing Inventory row.
+3. `ReserveStock`: receives **all** requested product IDs and quantities in one RPC. It checks and reserves the entire set atomically.
+4. `ReleaseStock`: returns all quantities attached to one reservation reference. Repeated release calls are safe and do not add stock twice.
 
 The same `.proto` file is also included in the Orders integration archive. Do not create two different contracts.
 
@@ -127,3 +128,11 @@ npm run test:race -- 20 3
 ```
 
 Expected: exactly one reservation succeeds, the other 19 are rejected, and the test script releases its successful test reservation at the end so the test does not consume stock permanently.
+
+To verify initial stock registration and duplicate protection against the running service, run:
+
+```powershell
+npm run test:initial-stock
+```
+
+The test inserts a temporary inventory row and removes it when finished.

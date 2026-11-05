@@ -17,6 +17,17 @@ final class InventoryServiceClient extends \Grpc\BaseStub
         );
     }
 
+    public function InitializeProductStock($argument, $metadata = [], $options = [])
+    {
+        return $this->_simpleRequest(
+            '/inventory.v1.InventoryService/InitializeProductStock',
+            $argument,
+            [StockOperationResponse::class, 'decode'],
+            $metadata,
+            $options
+        );
+    }
+
     public function ReserveStock($argument, $metadata = [], $options = [])
     {
         return $this->_simpleRequest(

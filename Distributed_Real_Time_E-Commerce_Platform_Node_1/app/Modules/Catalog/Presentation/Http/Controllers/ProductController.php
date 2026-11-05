@@ -56,11 +56,16 @@ final class ProductController
         ], 'Product retrieved successfully.');
     }
 
-    public function store(StoreProductRequest $request,CreateProductUseCase $useCase): JsonResponse
+    public function store(
+        StoreProductRequest $request,
+        CreateProductUseCase $useCase,
+        InventoryGatewayInterface $inventory
+    ): JsonResponse
     {
-        $product = $useCase->execute(
-            CreateProductDTO::fromArray($request->validated())
-        );
+        $dto = CreateProductDTO::fromArray($request->validated());
+        $product = $useCase->execute($dto);
+        $inventory->initializeProductStock((int) $product->id, $dto->initialQuantity);
+        $product->setAttribute('available_quantity', $dto->initialQuantity);
 
         return ApiResponse::success(
             ProductResource::make($product)->resolve(),

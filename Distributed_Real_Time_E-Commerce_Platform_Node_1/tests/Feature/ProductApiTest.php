@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Modules\Orders\Application\Contracts\InventoryGatewayInterface;
 use App\Modules\Products\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -18,13 +19,18 @@ class ProductApiTest extends TestCase
         Storage::fake('public');
         $admin = User::factory()->responsible()->create();
         $category = Category::create(['name' => 'Books', 'slug' => 'books']);
+        $this->mock(InventoryGatewayInterface::class, function ($mock) {
+            $mock->shouldReceive('initializeProductStock')
+                ->once()
+                ->withArgs(fn (int $productId, int $quantity) => $productId > 0 && $quantity === 7);
+        });
 
         $response = $this->post('/api/v1/products', [
             'category_id' => $category->id,
             'name' => 'Clean Architecture',
             'description' => 'A book.',
             'price' => '29.99',
-            'stock' => 7,
+            'quantity' => 7,
             'images' => [
                 UploadedFile::fake()->image('cover.jpg', 600, 800),
                 UploadedFile::fake()->image('back.png', 600, 800),
@@ -35,6 +41,7 @@ class ProductApiTest extends TestCase
             ->assertHeader('Location')
             ->assertJsonPath('data.name', 'Clean Architecture')
             ->assertJsonPath('data.price', '29.99')
+            ->assertJsonPath('data.available_quantity', 7)
             ->assertJsonPath('data.category.slug', 'books')
             ->assertJsonCount(2, 'data.images');
 
@@ -53,7 +60,7 @@ class ProductApiTest extends TestCase
             'category_id' => $category->id,
             'name' => 'Bad upload',
             'price' => '5',
-            'stock' => 1,
+            'quantity' => 1,
             'images' => [UploadedFile::fake()->create('shell.php', 10, 'application/x-php')],
         ], $this->authHeaders($admin) + ['Accept' => 'application/json'])
             ->assertStatus(422)

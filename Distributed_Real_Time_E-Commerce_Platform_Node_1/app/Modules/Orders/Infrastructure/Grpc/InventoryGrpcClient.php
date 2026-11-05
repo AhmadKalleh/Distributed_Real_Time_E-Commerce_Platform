@@ -59,6 +59,25 @@ final class InventoryGrpcClient implements InventoryGatewayInterface
         return $response->getFound() ? (int) $response->getAvailableQuantity() : null;
     }
 
+    public function initializeProductStock(int $productId, int $quantity): void
+    {
+        $request = new StockItem();
+        $request->setProductId($productId);
+        $request->setQuantity($quantity);
+
+        $response = $this->waitFor(fn () => $this->client->InitializeProductStock(
+            $request,
+            [],
+            ['timeout' => $this->timeoutMicroseconds]
+        ));
+
+        if (! $response->getSuccess()) {
+            throw new InventoryServiceUnavailableException(
+                'Product was created, but its initial inventory could not be initialized: '.$response->getMessage()
+            );
+        }
+    }
+
     /** @param array<int|string, int> $quantities keyed by product ID */
     public function reserveStock(string $reservationReference, array $quantities): void
     {

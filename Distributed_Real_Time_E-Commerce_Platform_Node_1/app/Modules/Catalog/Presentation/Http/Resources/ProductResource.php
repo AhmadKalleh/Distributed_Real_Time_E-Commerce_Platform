@@ -15,6 +15,10 @@ final class ProductResource extends JsonResource
             'slug' => $this->slug,
             'description' => $this->description,
             'price' => $this->price,
+            'available_quantity' => $this->when(
+                isset($this->available_quantity),
+                (int) $this->available_quantity
+            ),
             'is_active' => $this->is_active,
             'category' => CategoryResource::make($this->whenLoaded('category')),
             'images' => ProductImageResource::collection($this->whenLoaded('images')),

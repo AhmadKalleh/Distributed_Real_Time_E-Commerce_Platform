@@ -13,6 +13,7 @@ final readonly class CreateProductDTO
         public ?string $description,
         public string $price,
         public bool $isActive,
+        public int $initialQuantity = 0,
         public array $images = [],
     ) {}
 
@@ -24,6 +25,7 @@ final readonly class CreateProductDTO
             description: isset($data['description']) ? (string) $data['description'] : null,
             price: (string) $data['price'],
             isActive: array_key_exists('is_active', $data) ? (bool) $data['is_active'] : true,
+            initialQuantity: (int) $data['quantity'],
             images: $data['images'] ?? [],
         );
     }

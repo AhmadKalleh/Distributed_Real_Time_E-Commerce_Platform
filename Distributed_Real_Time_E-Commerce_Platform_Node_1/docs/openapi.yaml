@@ -117,7 +117,7 @@ components:
         slug: { type: string }
         description: { type: string, nullable: true }
         price: { type: string, example: "18.50" }
-        stock: { type: integer, example: 50 }
+        available_quantity: { type: integer, example: 50 }
         in_stock: { type: boolean }
         is_active: { type: boolean }
         category: { $ref: '#/components/schemas/Category' }
@@ -388,13 +388,13 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [category_id, name, price, stock, images]
+              required: [category_id, name, price, quantity, images]
               properties:
                 category_id: { type: integer, example: 1 }
                 name: { type: string, example: Mechanical Keyboard }
                 description: { type: string }
                 price: { type: number, example: 59.90 }
-                stock: { type: integer, example: 25 }
+                quantity: { type: integer, minimum: 0, maximum: 2147483647, example: 25 }
                 is_active: { type: boolean, default: true }
                 images:
                   type: array
@@ -418,6 +418,8 @@ paths:
         '401': { $ref: '#/components/responses/Unauthenticated' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '422': { $ref: '#/components/responses/ValidationError' }
+        '503':
+          description: Product was saved, but initial inventory registration failed. Check Inventory and reconcile the product quantity.
 
   /products/{product}:
     get:

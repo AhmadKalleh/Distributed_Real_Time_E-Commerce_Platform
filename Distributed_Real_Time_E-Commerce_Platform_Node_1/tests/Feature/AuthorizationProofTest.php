@@ -109,7 +109,7 @@ class AuthorizationProofTest extends TestCase
             'category_id' => 1,
             'name' => 'Hacked product',
             'price' => 1,
-            'stock' => 1,
+            'quantity' => 1,
             'images' => [UploadedFile::fake()->image('x.jpg')],
         ], $this->authHeaders($this->alice) + ['Accept' => 'application/json'])
             ->assertForbidden()

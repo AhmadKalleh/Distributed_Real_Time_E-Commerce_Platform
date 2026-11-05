@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "test:initial-stock": "node scripts/initial-stock-test.js",
     "test:race": "node scripts/race-test.js",
     "release": "node scripts/release-reservation.js"
   },

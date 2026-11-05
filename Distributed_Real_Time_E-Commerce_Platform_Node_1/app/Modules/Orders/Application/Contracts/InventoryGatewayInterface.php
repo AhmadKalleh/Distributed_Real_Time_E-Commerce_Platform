@@ -10,6 +10,8 @@ interface InventoryGatewayInterface
 {
     public function getAvailableQuantity(int $productId): ?int;
 
+    public function initializeProductStock(int $productId, int $quantity): void;
+
     /** @param array<int|string, int> $quantities keyed by product ID */
     public function reserveStock(string $reservationReference, array $quantities): void;
 

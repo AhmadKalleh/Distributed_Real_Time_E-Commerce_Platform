@@ -61,13 +61,15 @@ All endpoints are under `/api/v1`. Full details are in Swagger.
 | GET | `/categories` | public |
 | GET | `/products?category=&search=&min_price=&max_price=&sort=&page=&per_page=` | public |
 | GET | `/products/{id}` | public |
-| POST | `/products` (multipart, `images[]`) | Responsible |
+| POST | `/products` (multipart, `quantity`, optional `images[]`) | Responsible |
 | GET | `/orders` | Customer: own orders only. Responsible: all orders |
 | POST | `/orders` | Customer |
 | GET | `/orders/{id}` | owner or Responsible |
 | PATCH | `/orders/{id}/status` | Responsible |
 | GET | `/notifications` | own notifications only |
 | PATCH | `/notifications/{id}/read` | owner only |
+
+When a Responsible user creates a product, Node 1 registers the non-negative `quantity` with the Inventory gRPC service. The create response includes `available_quantity`.
 
 ### Email notifications
 
@@ -117,6 +119,23 @@ php artisan test
 - an `alg: none` token gets **401**.
 
 `AuthTest` covers login lockout, the per-IP rate limit, logout revocation, expired tokens, and that a demoted admin loses access right away (the role is read from the database on every request, not trusted from the token).
+
+### Automated two-user demo
+
+Set these variables in the current PowerShell session; keep credentials out of committed files:
+
+```powershell
+$env:AUTH_USER_A_EMAIL = "<customer-a-email>"
+$env:AUTH_USER_A_PASSWORD = "<customer-a-password>"
+$env:AUTH_USER_B_EMAIL = "<customer-b-email>"
+$env:AUTH_USER_B_PASSWORD = "<customer-b-password>"
+$env:AUTH_TEST_PATH = "/orders/<order-id>"
+$env:AUTH_EXPECTED_USER_A_STATUS = "200"
+$env:AUTH_EXPECTED_USER_B_STATUS = "403"
+node app/scripts/auth-flow-test.mjs
+```
+
+The script logs in as User A, requests the configured resource, logs out, verifies that A's revoked token gets `401`, then logs in as User B and requests the same resource. For a general endpoint such as `/orders`, omit the path/status overrides or set both expected statuses to `200`. Optional `API_BASE_URL`, `AUTH_TEST_METHOD`, and `AUTH_TEST_BODY` variables configure the API URL and request; the default method is `GET`.
 
 ### Manual demo with curl
 

@@ -8,6 +8,16 @@ function createInventoryHandlers(repository) {
       return repository.getProductQuantity(productId);
     }),
 
+    initializeProductStock: asyncUnary(async (request) => {
+      const productId = Number(request.product_id);
+      const quantity = Number(request.quantity);
+      if (!Number.isSafeInteger(productId) || productId <= 0 ||
+          !Number.isInteger(quantity) || quantity < 0 || quantity > 2147483647) {
+        return { success: false, message: 'A valid product ID and non-negative quantity are required.' };
+      }
+      return repository.initializeProductStock(productId, quantity);
+    }),
+
     reserveStock: asyncUnary(async (request) => {
       return repository.reserveStock(request.reservation_reference, request.items || []);
     }),
