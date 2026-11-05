@@ -28,6 +28,21 @@ The same `.proto` file is also included in the Orders integration archive. Do no
 - MySQL 8.x (InnoDB).
 - npm.
 
+## Run with Docker Compose
+
+From this folder, build and start the Inventory service and its private MySQL database:
+
+```powershell
+docker compose up --build -d
+docker compose logs -f inventory
+```
+
+The gRPC service is published on `127.0.0.1:50051`. MySQL runs in its own container and is published on `127.0.0.1:3307` to avoid conflicting with the Orders project's MySQL port. The schema is applied automatically when the database volume is first created. The database is persisted in the `inventory-db-data` volume.
+
+To stop the containers while keeping database data, run `docker compose down`. To remove the database data too, run `docker compose down -v`.
+
+For local development, set `INVENTORY_DB_PASSWORD` and `INVENTORY_DB_ROOT_PASSWORD` in the shell or a `.env` file before starting Compose. The defaults are for local use only. The example seed is not loaded automatically; run it explicitly only in a development database.
+
 ## Run locally on Windows PowerShell
 
 From this folder:

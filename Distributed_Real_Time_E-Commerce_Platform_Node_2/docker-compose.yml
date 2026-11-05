@@ -1,0 +1,40 @@
+services:
+  inventory:
+    build: .
+    environment:
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50051
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: distributed_real_time_e_commerce_platform_node_2
+      DB_USER: inventory
+      DB_PASSWORD: ${INVENTORY_DB_PASSWORD:-inventory-local-pass}
+      DB_CONNECTION_LIMIT: 10
+    ports:
+      - "${INVENTORY_GRPC_PORT:-50051}:50051"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: distributed_real_time_e_commerce_platform_node_2
+      MYSQL_USER: inventory
+      MYSQL_PASSWORD: ${INVENTORY_DB_PASSWORD:-inventory-local-pass}
+      MYSQL_ROOT_PASSWORD: ${INVENTORY_DB_ROOT_PASSWORD:-inventory-root-local-pass}
+    ports:
+      - "${INVENTORY_DB_PORT:-3307}:3306"
+    volumes:
+      - inventory-db-data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+volumes:
+  inventory-db-data:

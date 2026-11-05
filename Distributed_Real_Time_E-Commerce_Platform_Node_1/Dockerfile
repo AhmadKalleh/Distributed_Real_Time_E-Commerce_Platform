@@ -19,8 +19,8 @@ RUN composer dump-autoload --no-dev --optimize --no-scripts
 FROM php:8.3-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends default-mysql-client libstdc++6 $PHPIZE_DEPS \
-    && pecl install grpc \
+    && apt-get install -y --no-install-recommends default-mysql-client libstdc++6 zlib1g-dev libssl-dev $PHPIZE_DEPS \
+    && pecl install grpc-1.57.0 \
     && docker-php-ext-enable grpc \
     && docker-php-ext-install pdo_mysql opcache \
     && apt-get purge -y --auto-remove $PHPIZE_DEPS \
