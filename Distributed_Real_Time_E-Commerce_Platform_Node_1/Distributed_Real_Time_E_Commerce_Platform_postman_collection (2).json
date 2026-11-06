@@ -1,0 +1,3651 @@
+{
+  "info": {
+    "_postman_id": "e7791930-c06f-4418-924b-bbb7ce852aa8",
+    "name": "Distributed_Real_Time_E-Commerce_Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38845518"
+  },
+  "item": [
+    {
+      "name": "Identity",
+      "item": [
+        {
+          "name": "Admin & Customer",
+          "item": [
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code === 200) {\r\n    const response = pm.response.json();\r\n\r\n    if (response.data && response.data.access_token) {\r\n        pm.collectionVariables.set(\r\n            \"token\",\r\n            response.data.access_token\r\n        );\r\n    }\r\n}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n   \"email\": \"ahmadhkalleh@gmail.com\",//ahmadhkalleh@gmail.com  mohahmk03@gmail.com\r\n   \"password\": \"password\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "email_required",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  //\"email\": \"customer1@example.com\",\r\n  \"password\": \"CustomerDemo123!\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 26 Oct 2026 09:54:56 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "0"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "-1"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"email\": [\n      \"Email is required.\"\n    ]\n  },\n  \"message\": \"The given data was invalid.\",\n  \"code\": 422\n}"
+                },
+                {
+                  "name": "too_many_reqs",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n   \"email\": \"customer2@example.test\",\r\n   \"password\": \"CustomerDemo123!\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 26 Oct 2026 10:54:39 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many requests. Please try again later.\",\n  \"code\": 429\n}"
+                },
+                {
+                  "name": "invalid_cred",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n   \"email\": \"responsible@example.testTT\",\r\n   \"password\": \"password\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 26 Oct 2026 14:06:29 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "0"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "-1"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Invalid email or password.\",\n  \"code\": 404\n}"
+                },
+                {
+                  "name": "success_login",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n   \"email\": \"responsible@example.test\",\r\n   \"password\": \"password\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 26 Oct 2026 13:48:16 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "0"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "-1"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"access_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL3YxL2F1dGgvbG9naW4iLCJpYXQiOjE3OTMwMjI0OTQsImV4cCI6MTc5MzAyNjA5NCwibmJmIjoxNzkzMDIyNDk0LCJqdGkiOiJGS0c0VEJXRmxxWUFsYW5NIiwic3ViIjoiMSIsInBydiI6IjQxZWQzY2MwNTQ1NjUxNjc3MzgwYTY0M2Q4ODkzZDBhMjA0MTE1NTUifQ.N8Me6hwiGdgw2zhpGNJn2tgM07-RgJHkv2FRjCQ-hQY\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 3600,\n    \"user\": {\n      \"id\": 1,\n      \"name\": \"System Responsible\",\n      \"email\": \"responsible@example.test\",\n      \"role\": \"Responsible\"\n    }\n  },\n  \"message\": \"Login successful.\",\n  \"code\": 200\n}"
+                }
+              ]
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/logout",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "unauthenticated",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/auth/logout",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "logout"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 26 Oct 2026 14:05:42 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Unauthenticated.\",\n  \"code\": 401\n}"
+                },
+                {
+                  "name": "success_logout",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/auth/logout",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "auth",
+                        "logout"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 26 Oct 2026 14:10:19 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "0"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "-1"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Logout successful.\",\n  \"code\": 200\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "Admin & Customer",
+          "item": [
+            {
+              "name": "index_products",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"per_page\":5, // optional\r\n    \"min_price\":10, // optional\r\n    \"max_price\":100, // optional\r\n    \"sort\":\"name\", //name or price,created_at // optional\r\n    \"direction\":\"asc\", // or desc // optional\r\n    \"include_inactive\":true // optional\r\n    //\"search\":\"Wireless Mouse\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/products",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "index_products_for_second_page",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"per_page\":5,\r\n    \"page\":2\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:46:57 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": 3,\n        \"name\": \"Bluetooth Headphones\",\n        \"slug\": \"bluetooth-headphones\",\n        \"description\": \"Over-ear wireless headphones.\",\n        \"price\": \"49.99\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 1,\n          \"name\": \"Electronics\",\n          \"slug\": \"electronics\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 2,\n        \"name\": \"USB-C Hub\",\n        \"slug\": \"usb-c-hub\",\n        \"description\": \"Multi-port USB-C adapter for laptops.\",\n        \"price\": \"32.00\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 1,\n          \"name\": \"Electronics\",\n          \"slug\": \"electronics\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 1,\n        \"name\": \"Wireless Mouse\",\n        \"slug\": \"wireless-mouse\",\n        \"description\": \"Comfortable wireless mouse for daily work.\",\n        \"price\": \"18.50\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 1,\n          \"name\": \"Electronics\",\n          \"slug\": \"electronics\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 2,\n      \"per_page\": 5,\n      \"total\": 8,\n      \"last_page\": 2,\n      \"has_more_pages\": false,\n      \"next_page_url\": null,\n      \"prev_page_url\": \"http://127.0.0.1:8000/api/v1/products?page=1\"\n    }\n  },\n  \"message\": \"Products retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "index_products_using_specefic_pagination",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"per_page\":5 // optional\r\n    \r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:47:58 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": 8,\n        \"name\": \"Yoga Mat\",\n        \"slug\": \"yoga-mat\",\n        \"description\": \"Non-slip exercise mat.\",\n        \"price\": \"21.00\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 4,\n          \"name\": \"Sports\",\n          \"slug\": \"sports\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 7,\n        \"name\": \"Desk Lamp\",\n        \"slug\": \"desk-lamp\",\n        \"description\": \"Adjustable LED desk lamp.\",\n        \"price\": \"27.90\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 3,\n          \"name\": \"Home & Kitchen\",\n          \"slug\": \"home-kitchen\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 6,\n        \"name\": \"Insulated Bottle\",\n        \"slug\": \"insulated-bottle\",\n        \"description\": \"Reusable bottle for hot and cold drinks.\",\n        \"price\": \"12.25\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 3,\n          \"name\": \"Home & Kitchen\",\n          \"slug\": \"home-kitchen\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 5,\n        \"name\": \"Database Design Basics\",\n        \"slug\": \"database-design-basics\",\n        \"description\": \"An introductory database design book.\",\n        \"price\": \"16.75\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 2,\n          \"name\": \"Books\",\n          \"slug\": \"books\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 4,\n        \"name\": \"Clean Code\",\n        \"slug\": \"clean-code\",\n        \"description\": \"A software craftsmanship book.\",\n        \"price\": \"24.00\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 2,\n          \"name\": \"Books\",\n          \"slug\": \"books\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"per_page\": 5,\n      \"total\": 8,\n      \"last_page\": 2,\n      \"has_more_pages\": true,\n      \"next_page_url\": \"http://127.0.0.1:8000/api/v1/products?page=2\",\n      \"prev_page_url\": null\n    }\n  },\n  \"message\": \"Products retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "success_index",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"per_page\":5, // optional\r\n    \"min_price\":10,// optional\r\n    \"max_price\":100,// optional\r\n    \"sort\":\"name\", //name or price,created_at // optional\r\n    \"direction\":\"asc\", // or desc // optional\r\n    \"include_inactive\":true // optional\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:45:19 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": 3,\n        \"name\": \"Bluetooth Headphones\",\n        \"slug\": \"bluetooth-headphones\",\n        \"description\": \"Over-ear wireless headphones.\",\n        \"price\": \"49.99\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 1,\n          \"name\": \"Electronics\",\n          \"slug\": \"electronics\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 4,\n        \"name\": \"Clean Code\",\n        \"slug\": \"clean-code\",\n        \"description\": \"A software craftsmanship book.\",\n        \"price\": \"24.00\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 2,\n          \"name\": \"Books\",\n          \"slug\": \"books\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 5,\n        \"name\": \"Database Design Basics\",\n        \"slug\": \"database-design-basics\",\n        \"description\": \"An introductory database design book.\",\n        \"price\": \"16.75\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 2,\n          \"name\": \"Books\",\n          \"slug\": \"books\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 7,\n        \"name\": \"Desk Lamp\",\n        \"slug\": \"desk-lamp\",\n        \"description\": \"Adjustable LED desk lamp.\",\n        \"price\": \"27.90\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 3,\n          \"name\": \"Home & Kitchen\",\n          \"slug\": \"home-kitchen\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      },\n      {\n        \"id\": 6,\n        \"name\": \"Insulated Bottle\",\n        \"slug\": \"insulated-bottle\",\n        \"description\": \"Reusable bottle for hot and cold drinks.\",\n        \"price\": \"12.25\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 3,\n          \"name\": \"Home & Kitchen\",\n          \"slug\": \"home-kitchen\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"per_page\": 5,\n      \"total\": 8,\n      \"last_page\": 2,\n      \"has_more_pages\": true,\n      \"next_page_url\": \"http://127.0.0.1:8000/api/v1/products?page=2\",\n      \"prev_page_url\": null\n    }\n  },\n  \"message\": \"Products retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "serach_by_name",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"search\":\"Wireless Mouse\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:48:28 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": 1,\n        \"name\": \"Wireless Mouse\",\n        \"slug\": \"wireless-mouse\",\n        \"description\": \"Comfortable wireless mouse for daily work.\",\n        \"price\": \"18.50\",\n        \"is_active\": 1,\n        \"category\": {\n          \"id\": 1,\n          \"name\": \"Electronics\",\n          \"slug\": \"electronics\",\n          \"description\": null\n        },\n        \"images\": [],\n        \"created_at\": \"2026-10-30\",\n        \"updated_at\": \"2026-10-30\"\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"per_page\": 15,\n      \"total\": 1,\n      \"last_page\": 1,\n      \"has_more_pages\": false,\n      \"next_page_url\": null,\n      \"prev_page_url\": null\n    }\n  },\n  \"message\": \"Products retrieved successfully.\",\n  \"code\": 200\n}"
+                }
+              ]
+            },
+            {
+              "name": "index_categories",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/categories",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "categories"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "success_index_categories",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/categories",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "categories"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 27 Oct 2026 05:35:06 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": [\n    {\n      \"id\": 2,\n      \"name\": \"Books\",\n      \"slug\": \"books\",\n      \"description\": \"Printed books and learning materials.\"\n    },\n    {\n      \"id\": 1,\n      \"name\": \"Electronics\",\n      \"slug\": \"electronics\",\n      \"description\": \"Electronic devices and accessories.\"\n    },\n    {\n      \"id\": 3,\n      \"name\": \"Home & Kitchen\",\n      \"slug\": \"home-kitchen\",\n      \"description\": \"Useful products for home and kitchen.\"\n    },\n    {\n      \"id\": 4,\n      \"name\": \"Sports\",\n      \"slug\": \"sports\",\n      \"description\": \"Sports and fitness equipment.\"\n    }\n  ],\n  \"message\": \"Categories retrieved successfully.\",\n  \"code\": 200\n}"
+                }
+              ]
+            },
+            {
+              "name": "show_product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/products/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products",
+                    "2"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "success_show_product",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/products/9",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products",
+                        "9"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 27 Oct 2026 05:50:10 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"id\": 9,\n    \"name\": \"P1\",\n    \"slug\": \"p1\",\n    \"description\": \"TTT\",\n    \"price\": \"100.00\",\n    \"is_active\": 1,\n    \"category\": {\n      \"id\": 2,\n      \"name\": \"Books\",\n      \"slug\": \"books\",\n      \"description\": null\n    },\n    \"images\": [\n      {\n        \"id\": 1,\n        \"url\": \"http://localhost:8000/storage/products/aaa030e0-e314-4610-9ebe-2f09d48a397f.png\",\n        \"sort_order\": 0\n      }\n    ],\n    \"created_at\": \"2026-10-27\",\n    \"updated_at\": \"2026-10-27\"\n  },\n  \"message\": \"Product retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "not_found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/products/90",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products",
+                        "90"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 27 Oct 2026 06:51:13 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Product not found.\",\n  \"code\": 404\n}"
+                },
+                {
+                  "name": "success_show_product",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/products/2",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products",
+                        "2"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 03 Nov 2026 07:47:48 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"product\": {\n      \"id\": 2,\n      \"name\": \"USB-C Hub\",\n      \"slug\": \"usb-c-hub\",\n      \"description\": \"Multi-port USB-C adapter for laptops.\",\n      \"price\": \"32.00\",\n      \"is_active\": 1,\n      \"category\": {\n        \"id\": 1,\n        \"name\": \"Electronics\",\n        \"slug\": \"electronics\",\n        \"description\": null\n      },\n      \"images\": [],\n      \"created_at\": \"2026-11-03\",\n      \"updated_at\": \"2026-11-03\"\n    },\n    \"available_quantity\": 5\n  },\n  \"message\": \"Product retrieved successfully.\",\n  \"code\": 200\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin",
+          "item": [
+            {
+              "name": "create_product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "category_id",
+                      "value": "2",
+                      "type": "text"
+                    },
+                    {
+                      "key": "name",
+                      "value": "P1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "TTT",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price",
+                      "value": "100",
+                      "type": "text"
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "images[0]",
+                      "type": "file",
+                      "src": [
+                        "/C:/Users/ahmad/OneDrive/الصور/cert.png"
+                      ]
+                    },
+                    {
+                      "key": "images[1]",
+                      "type": "file",
+                      "src": [
+                        "/C:/Users/ahmad/OneDrive/الصور/mech.png"
+                      ]
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/products",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "not_authorized",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "category_id",
+                          "value": "20",
+                          "type": "text"
+                        },
+                        {
+                          "key": "name",
+                          "value": "P1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "TTT",
+                          "type": "text"
+                        },
+                        {
+                          "key": "price",
+                          "value": "100",
+                          "type": "text"
+                        },
+                        {
+                          "key": "is_active",
+                          "value": "true",
+                          "type": "text"
+                        },
+                        {
+                          "key": "images[0]",
+                          "type": "file",
+                          "src": [
+                            "/C:/Users/ahmad/Downloads/تيكسبو الدولي ٢٠٢٦ في دمشق.png"
+                          ]
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 27 Oct 2026 05:40:30 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"You are not authorized to perform this action.\",\n  \"code\": 403\n}"
+                },
+                {
+                  "name": "invalid_cate_id",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "category_id",
+                          "value": "20",
+                          "type": "text"
+                        },
+                        {
+                          "key": "name",
+                          "value": "P1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "TTT",
+                          "type": "text"
+                        },
+                        {
+                          "key": "price",
+                          "value": "100",
+                          "type": "text"
+                        },
+                        {
+                          "key": "is_active",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "images[0]",
+                          "type": "file",
+                          "src": [
+                            "/C:/Users/ahmad/Downloads/تيكسبو الدولي ٢٠٢٦ في دمشق.png"
+                          ]
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 27 Oct 2026 05:41:18 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Category not found.\",\n  \"code\": 404\n}"
+                },
+                {
+                  "name": "success_create",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "category_id",
+                          "value": "2",
+                          "type": "text"
+                        },
+                        {
+                          "key": "name",
+                          "value": "P1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "description",
+                          "value": "TTT",
+                          "type": "text"
+                        },
+                        {
+                          "key": "price",
+                          "value": "100",
+                          "type": "text"
+                        },
+                        {
+                          "key": "is_active",
+                          "value": "1",
+                          "type": "text"
+                        },
+                        {
+                          "key": "images[0]",
+                          "type": "file",
+                          "src": [
+                            "/C:/Users/ahmad/Downloads/تيكسبو الدولي ٢٠٢٦ في دمشق.png"
+                          ]
+                        },
+                        {
+                          "key": "images[1]",
+                          "type": "file",
+                          "src": [
+                            "/C:/Users/ahmad/OneDrive/الصور/cert.png"
+                          ]
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/products",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "products"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 27 Oct 2026 06:40:37 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"id\": 9,\n    \"name\": \"P1\",\n    \"slug\": \"p1\",\n    \"description\": \"TTT\",\n    \"price\": \"100\",\n    \"is_active\": true,\n    \"category\": {\n      \"id\": 2,\n      \"name\": \"Books\",\n      \"slug\": \"books\",\n      \"description\": null\n    },\n    \"images\": [\n      {\n        \"id\": 1,\n        \"url\": \"http://localhost:8000/storage/products/eccefdf8-8a7b-4b49-ae0e-01d807628b2f.png\",\n        \"sort_order\": 0\n      },\n      {\n        \"id\": 2,\n        \"url\": \"http://localhost:8000/storage/products/930ad611-35b3-41ff-9ed5-cc358891cd91.png\",\n        \"sort_order\": 1\n      }\n    ],\n    \"created_at\": \"2026-10-27\",\n    \"updated_at\": \"2026-10-27\"\n  },\n  \"message\": \"Product created successfully.\",\n  \"code\": 201\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Admin & Customer",
+          "item": [
+            {
+              "name": "index_orders",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"per_page\":5, // optional\r\n    \"status\":\"Pending\", // optional\r\n    \"page\":1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Unauthenticated",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:02:44 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Unauthenticated.\",\n  \"code\": 401\n}"
+                },
+                {
+                  "name": "empty_orders",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:13:13 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": [],\n  \"message\": \"No orders found.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "filter_index_orders",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"per_page\":5, // optional\r\n    \"status\":\"Pending\" // optional\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:43:08 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"orders\": [\n      {\n        \"id\": 1,\n        \"user_id\": 2,\n        \"status\": \"Pending\",\n        \"allowed_next_statuses\": [\n          \"Confirmed\",\n          \"Cancelled\"\n        ],\n        \"total_amount\": \"1000.00\",\n        \"items\": [\n          {\n            \"product_id\": 1,\n            \"product_name\": \"Wireless Mouse\",\n            \"quantity\": 2,\n            \"unit_price\": \"1000.00\",\n            \"line_total\": \"2000.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"last_page\": 1,\n      \"per_page\": 5,\n      \"total\": 1,\n      \"has_more\": false,\n      \"next_page_url\": null,\n      \"prev_page_url\": null\n    }\n  },\n  \"message\": \"Orders retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "get_all_orders",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"per_page\":5 // optional\r\n    //\"status\":\"Pending\" // optional\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:43:45 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"orders\": [\n      {\n        \"id\": 7,\n        \"user_id\": 3,\n        \"status\": \"Confirmed\",\n        \"allowed_next_statuses\": [\n          \"Shipped\",\n          \"Cancelled\"\n        ],\n        \"total_amount\": \"1200.00\",\n        \"items\": [\n          {\n            \"product_id\": 5,\n            \"product_name\": \"Database Design Basics\",\n            \"quantity\": 4,\n            \"unit_price\": \"1200.00\",\n            \"line_total\": \"4800.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      },\n      {\n        \"id\": 5,\n        \"user_id\": 2,\n        \"status\": \"Cancelled\",\n        \"allowed_next_statuses\": [],\n        \"total_amount\": \"800.00\",\n        \"items\": [\n          {\n            \"product_id\": 2,\n            \"product_name\": \"USB-C Hub\",\n            \"quantity\": 2,\n            \"unit_price\": \"400.00\",\n            \"line_total\": \"800.00\"\n          },\n          {\n            \"product_id\": 4,\n            \"product_name\": \"Clean Code\",\n            \"quantity\": 2,\n            \"unit_price\": \"400.00\",\n            \"line_total\": \"800.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      },\n      {\n        \"id\": 4,\n        \"user_id\": 2,\n        \"status\": \"Delivered\",\n        \"allowed_next_statuses\": [],\n        \"total_amount\": \"500.00\",\n        \"items\": [\n          {\n            \"product_id\": 4,\n            \"product_name\": \"Clean Code\",\n            \"quantity\": 3,\n            \"unit_price\": \"500.00\",\n            \"line_total\": \"1500.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      },\n      {\n        \"id\": 3,\n        \"user_id\": 2,\n        \"status\": \"Shipped\",\n        \"allowed_next_statuses\": [\n          \"Delivered\"\n        ],\n        \"total_amount\": \"1000.00\",\n        \"items\": [\n          {\n            \"product_id\": 2,\n            \"product_name\": \"USB-C Hub\",\n            \"quantity\": 6,\n            \"unit_price\": \"1000.00\",\n            \"line_total\": \"6000.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      },\n      {\n        \"id\": 2,\n        \"user_id\": 2,\n        \"status\": \"Confirmed\",\n        \"allowed_next_statuses\": [\n          \"Shipped\",\n          \"Cancelled\"\n        ],\n        \"total_amount\": \"2000.00\",\n        \"items\": [\n          {\n            \"product_id\": 1,\n            \"product_name\": \"Wireless Mouse\",\n            \"quantity\": 4,\n            \"unit_price\": \"2000.00\",\n            \"line_total\": \"8000.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"last_page\": 2,\n      \"per_page\": 5,\n      \"total\": 6,\n      \"has_more\": true,\n      \"next_page_url\": \"http://127.0.0.1:8000/api/v1/orders?page=2\",\n      \"prev_page_url\": null\n    }\n  },\n  \"message\": \"Orders retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "get_all_orders_seconde_page",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"per_page\":5, // optional\r\n    \"status\":\"Pending\", // optional\r\n    \"page\":2\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:50:53 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"orders\": [\n      {\n        \"id\": 1,\n        \"user_id\": 2,\n        \"status\": \"Pending\",\n        \"allowed_next_statuses\": [\n          \"Confirmed\",\n          \"Cancelled\"\n        ],\n        \"total_amount\": \"1000.00\",\n        \"items\": [\n          {\n            \"product_id\": 1,\n            \"product_name\": \"Wireless Mouse\",\n            \"quantity\": 2,\n            \"unit_price\": \"1000.00\",\n            \"line_total\": \"2000.00\"\n          }\n        ],\n        \"created_at\": null,\n        \"updated_at\": null\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 2,\n      \"last_page\": 2,\n      \"per_page\": 5,\n      \"total\": 6,\n      \"has_more\": false,\n      \"next_page_url\": null,\n      \"prev_page_url\": \"http://127.0.0.1:8000/api/v1/orders?page=1\"\n    }\n  },\n  \"message\": \"Orders retrieved successfully.\",\n  \"code\": 200\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Customer",
+          "item": [
+            {
+              "name": "show_order",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/orders/3",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "3"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "success_show",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/orders/1",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "1"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:56:15 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"user_id\": 2,\n    \"status\": \"Pending\",\n    \"allowed_next_statuses\": [\n      \"Confirmed\",\n      \"Cancelled\"\n    ],\n    \"total_amount\": \"1000.00\",\n    \"items\": [\n      {\n        \"product_id\": 1,\n        \"product_name\": \"Wireless Mouse\",\n        \"quantity\": 2,\n        \"unit_price\": \"1000.00\",\n        \"line_total\": \"2000.00\"\n      }\n    ],\n    \"created_at\": null,\n    \"updated_at\": null\n  },\n  \"message\": \"Order retrieved successfully.\",\n  \"code\": 200\n}"
+                },
+                {
+                  "name": "not_authorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/orders/7",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "7"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 17:56:56 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"You are not authorized to perform this action.\",\n  \"code\": 403\n}"
+                }
+              ]
+            },
+            {
+              "name": "create_order",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "admin_blocked",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 5,\r\n            \"quantity\": 10\r\n        },\r\n        {\r\n            \"product_id\": 12,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 18:54:02 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"You are not authorized to perform this action.\",\n  \"code\": 403\n}"
+                },
+                {
+                  "name": "product_unavailable",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 100,\r\n            \"quantity\": 60\r\n        },\r\n        {\r\n            \"product_id\": 5,\r\n            \"quantity\": 10\r\n        },\r\n        {\r\n            \"product_id\": 12,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 19:10:15 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"The product 'Product #100' is currently unavailable or inactive.\",\n  \"code\": 409\n}"
+                },
+                {
+                  "name": "prodcut_not_exist_in_inventory_serv",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 7,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 03 Nov 2026 08:39:40 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Product 7 does not exist in the inventory service.\",\n  \"code\": 409\n}"
+                },
+                {
+                  "name": "insufficient_stock",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 03 Nov 2026 07:52:37 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Product 3 has only 0 item(s) available; 1 requested.\",\n  \"code\": 409\n}"
+                },
+                {
+                  "name": "quantity_must_least_1",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 7,\r\n            \"quantity\": 0\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 03 Nov 2026 08:41:28 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"items.0.quantity\": [\n      \"The items.0.quantity field must be at least 1.\"\n    ]\n  },\n  \"message\": \"The given data was invalid.\",\n  \"code\": 422\n}"
+                },
+                {
+                  "name": "inventory_service_didi_not_respond",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Service Unavailable",
+                  "code": 503,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 03 Nov 2026 08:43:06 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"The inventory service did not respond successfully before the configured timeout.\",\n  \"code\": 503\n}"
+                },
+                {
+                  "name": "inventory_fail_after_stock_reservation",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Internal Server Error",
+                  "code": 500,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 03 Nov 2026 08:45:33 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Intentional test failure after stock reservation.\",\n  \"code\": 500\n}"
+                },
+                {
+                  "name": "success_create_order",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"items\": [\r\n        {\r\n            \"product_id\": 1,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 2,\r\n            \"quantity\": 2\r\n        },\r\n        {\r\n            \"product_id\": 3,\r\n            \"quantity\": 2\r\n        }\r\n    ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 19:27:16 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Location",
+                      "value": "http://127.0.0.1:8000/api/v1/orders/1"
+                    },
+                    {
+                      "key": "X-RateLimit-Limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "X-RateLimit-Remaining",
+                      "value": "9"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"user_id\": 2,\n    \"status\": \"Pending\",\n    \"allowed_next_statuses\": [\n      \"Confirmed\",\n      \"Cancelled\"\n    ],\n    \"total_amount\": \"200.98\",\n    \"items\": [\n      {\n        \"product_id\": 1,\n        \"product_name\": \"Wireless Mouse\",\n        \"quantity\": 2,\n        \"unit_price\": \"18.50\",\n        \"line_total\": \"37.00\"\n      },\n      {\n        \"product_id\": 2,\n        \"product_name\": \"USB-C Hub\",\n        \"quantity\": 2,\n        \"unit_price\": \"32.00\",\n        \"line_total\": \"64.00\"\n      },\n      {\n        \"product_id\": 3,\n        \"product_name\": \"Bluetooth Headphones\",\n        \"quantity\": 2,\n        \"unit_price\": \"49.99\",\n        \"line_total\": \"99.98\"\n      }\n    ],\n    \"created_at\": \"2026-10-30\",\n    \"updated_at\": \"2026-10-30\"\n  },\n  \"message\": \"Order created successfully.\",\n  \"code\": 201\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin",
+          "item": [
+            {
+              "name": "change_status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"status\":\"Cancelled\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/orders/4/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "4",
+                    "status"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "not_authorized",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\":\"Shipped\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders/5/status",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "5",
+                        "status"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 18:04:00 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"You are not authorized to perform this action.\",\n  \"code\": 403\n}"
+                },
+                {
+                  "name": "invalid_status_transition",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\":\"Shipped\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders/5/status",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "5",
+                        "status"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 18:04:29 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Cannot change order status from Delivered to Shipped.\",\n  \"code\": 422\n}"
+                },
+                {
+                  "name": "success_change_status",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\":\"Delivered\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/orders/3/status",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "3",
+                        "status"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 19:01:54 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"id\": 3,\n    \"user_id\": 2,\n    \"status\": \"Delivered\",\n    \"allowed_next_statuses\": [],\n    \"total_amount\": \"1000.00\",\n    \"items\": [\n      {\n        \"product_id\": 2,\n        \"product_name\": \"USB-C Hub\",\n        \"quantity\": 6,\n        \"unit_price\": \"1000.00\",\n        \"line_total\": \"6000.00\"\n      }\n    ],\n    \"created_at\": null,\n    \"updated_at\": \"2026-10-30T22:01:54+03:00\"\n  },\n  \"message\": \"Order status updated successfully.\",\n  \"code\": 200\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Admin & Customer",
+          "item": [
+            {
+              "name": "index_noti",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/notifications",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "notifications"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "success_index_noti",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/notifications",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Host",
+                      "value": "127.0.0.1:8000"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "close"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.2.12"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-store, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Fri, 30 Oct 2026 19:33:47 GMT"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Content-Type-Options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "X-Frame-Options",
+                      "value": "DENY"
+                    },
+                    {
+                      "key": "Referrer-Policy",
+                      "value": "no-referrer"
+                    },
+                    {
+                      "key": "Permissions-Policy",
+                      "value": "camera=(), microphone=(), geolocation=(), payment=()"
+                    },
+                    {
+                      "key": "Cross-Origin-Opener-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Cross-Origin-Resource-Policy",
+                      "value": "same-origin"
+                    },
+                    {
+                      "key": "Strict-Transport-Security",
+                      "value": "max-age=31536000; includeSubDomains"
+                    },
+                    {
+                      "key": "Content-Security-Policy",
+                      "value": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"data\": {\n    \"notifications\": [\n      {\n        \"id\": 1,\n        \"type\": \"order.placed\",\n        \"title\": \"Order #1 received\",\n        \"body\": \"We received your order #1 (200.98). It is now Pending.\",\n        \"payload\": {\n          \"order_id\": 1,\n          \"total_amount\": \"200.98\"\n        },\n        \"read_at\": null,\n        \"created_at\": \"2026-10-30\"\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"last_page\": 1,\n      \"per_page\": 20,\n      \"total\": 1,\n      \"count\": 1,\n      \"next_page_url\": null,\n      \"prev_page_url\": null\n    }\n  },\n  \"message\": \"Notifications retrieved successfully.\",\n  \"code\": 200\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "secret": true
+    }
+  ]
+}
