@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Modules\Orders\Application\Contracts\InventoryGatewayInterface;
-use App\Modules\Products\Models\Category;
+use App\Modules\Identity\Domain\Entities\User;
+use App\Shared\Contracts\InventoryGatewayInterface;
+use App\Modules\Catalog\Domain\Entities\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

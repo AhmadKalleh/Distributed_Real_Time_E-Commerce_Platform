@@ -12,7 +12,7 @@ use App\Modules\Catalog\Application\UseCases\Products\ShowProductUseCase;
 use App\Modules\Catalog\Presentation\Http\Requests\ListProductsRequest;
 use App\Modules\Catalog\Presentation\Http\Requests\StoreProductRequest;
 use App\Modules\Catalog\Presentation\Http\Resources\ProductResource;
-use App\Modules\Orders\Application\Contracts\InventoryGatewayInterface;
+use App\Shared\Contracts\InventoryGatewayInterface;
 use App\Shared\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -58,14 +58,11 @@ final class ProductController
 
     public function store(
         StoreProductRequest $request,
-        CreateProductUseCase $useCase,
-        InventoryGatewayInterface $inventory
+        CreateProductUseCase $useCase
     ): JsonResponse
     {
         $dto = CreateProductDTO::fromArray($request->validated());
         $product = $useCase->execute($dto);
-        $inventory->initializeProductStock((int) $product->id, $dto->initialQuantity);
-        $product->setAttribute('available_quantity', $dto->initialQuantity);
 
         return ApiResponse::success(
             ProductResource::make($product)->resolve(),

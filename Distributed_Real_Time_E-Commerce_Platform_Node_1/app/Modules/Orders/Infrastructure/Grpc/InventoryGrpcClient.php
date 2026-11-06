@@ -2,7 +2,6 @@
 
 namespace App\Modules\Orders\Infrastructure\Grpc;
 
-use App\Modules\Orders\Application\Contracts\InventoryGatewayInterface;
 use App\Modules\Orders\Domain\Exceptions\InventoryServiceUnavailableException;
 use App\Modules\Orders\Infrastructure\Grpc\Generated\InventoryServiceClient;
 use App\Modules\Orders\Infrastructure\Grpc\Generated\ProductQuantityRequest;
@@ -10,6 +9,7 @@ use App\Modules\Orders\Infrastructure\Grpc\Generated\ReleaseStockRequest;
 use App\Modules\Orders\Infrastructure\Grpc\Generated\ReserveStockRequest;
 use App\Modules\Orders\Infrastructure\Grpc\Generated\StockItem;
 use App\Modules\Orders\Domain\Exceptions\InsufficientStockException;
+use App\Shared\Contracts\InventoryGatewayInterface;
 use Throwable;
 
 /** The only place in Orders that knows about gRPC. */
