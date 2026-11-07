@@ -17,6 +17,7 @@ use App\Modules\Catalog\Domain\Exceptions\ProductNotFoundException;
 use App\Modules\Catalog\Domain\Exceptions\ProductUnavailableException;
 use App\Modules\Catalog\Domain\Exceptions\ProductSlugAlreadyExistsException;
 use App\Modules\Catalog\Domain\Services\ProductSlugGenerator;
+use App\Shared\Contracts\InventoryGatewayInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -29,7 +30,8 @@ final readonly class CatalogService implements CatalogServiceInterface, ProductC
         private ProductRepositoryInterface $products,
         private CategoryRepositoryInterface $categories,
         private ProductImageStorageInterface $imageStorage,
-        private ProductSlugGenerator $slugs
+        private ProductSlugGenerator $slugs,
+        private InventoryGatewayInterface $inventory
     ) {}
 
     public function listCategories(): EloquentCollection
@@ -120,12 +122,17 @@ final readonly class CatalogService implements CatalogServiceInterface, ProductC
             throw new ProductSlugAlreadyExistsException();
         }
 
-        return $this->imageStorage->storeAndPersist(
+        $product = $this->imageStorage->storeAndPersist(
             $dto->images,
             fn (array $stored) => $this->products->create(
                 $dto->toProductAttributes($slug),
                 $stored,
             ),
         );
+
+        $this->inventory->initializeProductStock((int) $product->id, $dto->initialQuantity);
+        $product->setAttribute('available_quantity', $dto->initialQuantity);
+
+        return $product;
     }
 }

@@ -4,7 +4,7 @@ namespace App\Modules\Orders\Infrastructure\Services;
 
 use App\Modules\Catalog\Application\Contracts\ProductCatalogInterface;
 use App\Modules\Catalog\Domain\Exceptions\ProductUnavailableException;
-use App\Modules\Orders\Application\Contracts\InventoryGatewayInterface;
+use App\Shared\Contracts\InventoryGatewayInterface;
 use App\Modules\Orders\Application\Contracts\OrderRepositoryInterface;
 use App\Modules\Orders\Application\Contracts\OrderServiceInterface;
 use App\Modules\Orders\Application\DTOs\Orders\ChangeOrderStatusDTO;

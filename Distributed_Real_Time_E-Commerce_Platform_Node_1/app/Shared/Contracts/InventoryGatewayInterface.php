@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\Orders\Application\Contracts;
+namespace App\Shared\Contracts;
 
 /**
  * Application port for the external Inventory service.
- * The gRPC protocol and generated messages stay behind its implementation.
+ * The protocol and generated messages stay behind its implementation.
  */
 interface InventoryGatewayInterface
 {
