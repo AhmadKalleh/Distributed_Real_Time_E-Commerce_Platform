@@ -41,12 +41,11 @@ class RouteServiceProvider extends ServiceProvider
                 }
 
                 Route::middleware('api')
-                    ->prefix('api/performance/baseline')
-                    ->middleware(EnsurePerformanceTesting::class)
-                    ->group(base_path('routes/performance.php'));
+                ->prefix('api')
+                ->group(base_path('routes/performance.php'));
             }
 
-            Route::middleware('web')
+                Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
 

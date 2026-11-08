@@ -1,10 +1,20 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-const baseUrl = (__ENV.API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '');
+const baseUrl = (__ENV.API_BASE_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
+const engine = __ENV.ENGINE || 'baseline'; // baseline | eloquent | sql
 const vus = Number(__ENV.VUS || 10);
 const duration = __ENV.DURATION || '60s';
-const label = __ENV.LABEL || 'baseline'; // مثال: LABEL=before أو LABEL=after
+const label = __ENV.LABEL || (engine === 'baseline' ? 'baseline' : `after-${engine}`);
+const followCursors = __ENV.FOLLOW_CURSORS === 'true';
+
+if (!['baseline', 'eloquent', 'sql'].includes(engine)) {
+    throw new Error('ENGINE must be "baseline", "eloquent" or "sql".');
+}
+
+const apiPath = engine === 'baseline'
+    ? '/api/performance/baseline'
+    : `/api/performance/optimized/${engine}`;
 
 const ENDPOINTS = ['products-list', 'product-details', 'orders-list', 'order-details'];
 
@@ -26,7 +36,7 @@ export const options = {
 };
 
 function get(path, name) {
-    const response = http.get(`${baseUrl}/api/performance/baseline${path}`, {
+    const response = http.get(`${baseUrl}${apiPath}${path}`, {
         tags: { endpoint: name },
         timeout: '60s',
     });
@@ -34,16 +44,39 @@ function get(path, name) {
     check(response, {
         [`${name} returns HTTP 200`]: (result) => result.status === 200,
     });
+
+    return response;
+}
+
+function nextCursor(response) {
+    try {
+        return response.json('data.pagination.next_cursor');
+    } catch (e) {
+        return null;
+    }
 }
 
 export default function () {
     const productId = ((__VU * 997 + __ITER * 101) % 5000) + 1;
     const orderId = ((__VU * 9973 + __ITER * 101) % 100000) + 1;
 
-    get('/products?per_page=20', 'products-list');
+    const productList = get('/products?per_page=20', 'products-list');
     get(`/products/${productId}`, 'product-details');
-    get('/orders?per_page=15', 'orders-list');
+    const orderList = get('/orders?per_page=15', 'orders-list');
     get(`/orders/${orderId}`, 'order-details');
+
+    // اختياري: متابعة الصفحة التالية (cursor) في النسخة المحسّنة فقط
+    if (followCursors && engine !== 'baseline') {
+        const productCursor = nextCursor(productList);
+        if (productCursor) {
+            get(`/products?per_page=20&cursor=${encodeURIComponent(productCursor)}`, 'products-list');
+        }
+
+        const orderCursor = nextCursor(orderList);
+        if (orderCursor) {
+            get(`/orders?per_page=15&cursor=${encodeURIComponent(orderCursor)}`, 'orders-list');
+        }
+    }
 
     sleep(0.5);
 }
@@ -82,6 +115,7 @@ export function handleSummary(data) {
 
     const json = {
         label,
+        engine,
         vus,
         duration,
         total_requests: m.http_reqs.values.count,
