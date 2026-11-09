@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use App\Shared\Contracts\CacheStore;
+use App\Shared\Infrastructure\Cache\RedisCacheStore;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -11,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-
+        $this->app->singleton(CacheStore::class,RedisCacheStore::class);
     }
 
     /**
