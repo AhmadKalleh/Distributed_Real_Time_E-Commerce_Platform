@@ -9,11 +9,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // ResponsibleUserSeeder::class,
-            // DemoUsersSeeder::class,
-            // CategorySeeder::class,
-            // ProductSeeder::class,
-            PerformanceSeeder::class,
+            ResponsibleUserSeeder::class,
+            DemoUsersSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
         ]);
+
+        if (config('app.performance_testing')) {
+            $this->call(PerformanceSeeder::class);
+        }
     }
 }
