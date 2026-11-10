@@ -26,16 +26,6 @@ final class ProductCacheObserver
         $this->invalidate($product);
     }
 
-    public function deleted(Product $product): void
-    {
-        $this->invalidate($product);
-    }
-
-    public function restored(Product $product): void
-    {
-        $this->invalidate($product);
-    }
-
     private function invalidate(Product $product): void
     {
         $this->cache->forget(CatalogCacheKeys::product((int) $product->id));

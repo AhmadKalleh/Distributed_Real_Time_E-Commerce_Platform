@@ -14,11 +14,13 @@ final class RedisCacheStore implements CacheStore
     public function remember(string $key, int $ttlSeconds, Closure $callback): mixed
     {
         try {
+            //التحقق من وجود البيانات في الكاش (Cache Hit):
             $hit = Redis::get($key);
             if ($hit !== null && $hit !== false) {
                 return json_decode($hit, true, 512, JSON_THROW_ON_ERROR);
             }
         } catch (Throwable $e) {
+            //التعامل مع سقوط الـ Redis (Fallback):
             Log::warning('cache read failed, falling back to DB', ['key' => $key, 'error' => $e->getMessage()]);
             return $callback();
         }
@@ -31,6 +33,7 @@ final class RedisCacheStore implements CacheStore
             DB::connection()->useWriteConnectionWhenReading(false);
         }
 
+        //Cache Stampede Protection
         try {
             $ttl = $ttlSeconds + random_int(0, (int) ($ttlSeconds * 0.1));
             Redis::setex($key, $ttl, json_encode($value, JSON_THROW_ON_ERROR));

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Performance;
 
+use App\Modules\Catalog\Application\Caching\CatalogCacheKeys;
 use App\Modules\Catalog\Domain\Entities\Product;
 use App\Modules\Orders\Domain\Entities\Order;
 use App\Modules\Orders\Domain\Entities\OrderItem;
 use App\Modules\Orders\Domain\Enums\OrderStatus;
+use App\Shared\Contracts\CacheStore;
 use App\Shared\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,50 +17,82 @@ final class OptimizedPerformanceController
 {
     public function __construct(
         private readonly EloquentOptimizedQueries $eloquent,
-        private readonly SqlOptimizedQueries $sql
     ) {
     }
 
-    public function products(Request $request, string $engine): JsonResponse
-    {
+    public function products(
+        Request $request,
+        CacheStore $cache,
+    ): JsonResponse {
         [$perPage, $cursor] = $this->paginationInput($request);
-        $paginator = $engine === 'eloquent'
-            ? $this->eloquent->products($perPage, $cursor, $request)
-            : $this->sql->products($perPage, $cursor, $request);
 
-        $items = $engine === 'eloquent'
-            ? $paginator->getCollection()->map(fn (Product $product) => $this->productPayload($product))->all()
-            : $paginator->items();
+        $key = CatalogCacheKeys::productList(
+            $cache->version(CatalogCacheKeys::PRODUCTS_GROUP),
+            $request->query(),
+        );
 
-        return ApiResponse::success([
-            'items' => $items,
-            'pagination' => $this->paginationPayload($paginator),
-        ], 'Optimized products retrieved successfully.');
+        $payload = $cache->remember(
+            $key,
+            CatalogCacheKeys::LIST_TTL,
+            function () use ($perPage, $cursor, $request) {
+                $paginator = $this->eloquent->products(
+                    $perPage,
+                    $cursor,
+                    $request
+                );
+
+                $items = $paginator->getCollection()
+                    ->map(fn (Product $product) => $this->productPayload($product))
+                    ->all();
+
+                return [
+                    'items' => $items,
+                    'pagination' => $this->paginationPayload($paginator),
+                ];
+            }
+        );
+
+        return ApiResponse::success(
+            $payload,
+            'Optimized products retrieved successfully.'
+        );
     }
 
-    public function showProduct(string $engine, int $product): JsonResponse
-    {
-        $found = $engine === 'eloquent'
-            ? $this->eloquent->product($product)
-            : $this->sql->product($product);
+    public function showProduct(
+        int $product,
+        CacheStore $cache,
+    ): JsonResponse {
+        $payload = $cache->remember(
+            CatalogCacheKeys::product($product),
+            CatalogCacheKeys::PRODUCT_TTL,
+            function () use ($product) {
+                $found = $this->eloquent->product($product);
 
-        $payload = $found instanceof Product
-            ? $this->productPayload($found, true)
-            : $found;
+                return $found instanceof Product
+                    ? $this->productPayload($found, true)
+                    : $found;
+            }
+        );
 
-        return ApiResponse::success($payload, 'Optimized product retrieved successfully.');
+        return ApiResponse::success(
+            $payload,
+            'Optimized product retrieved successfully.'
+        );
     }
 
-    public function orders(Request $request, string $engine): JsonResponse
+    public function orders(Request $request): JsonResponse
     {
         [$perPage, $cursor] = $this->paginationInput($request);
-        $paginator = $engine === 'eloquent'
-            ? $this->eloquent->orders($perPage, $cursor, $request)
-            : $this->sql->orders($perPage, $cursor, $request);
 
-        $items = $engine === 'eloquent'
-            ? $paginator->getCollection()->map(fn (Order $order) => $this->orderPayload($order))->all()
-            : $paginator->items();
+        $paginator = $this->eloquent->orders(
+            $perPage,
+            $cursor,
+            $request
+        );
+
+        $items = $paginator->getCollection()
+            ->map(fn (Order $order) => $this->orderPayload($order))
+            ->all();
 
         return ApiResponse::success([
             'items' => $items,
@@ -66,17 +100,18 @@ final class OptimizedPerformanceController
         ], 'Optimized orders retrieved successfully.');
     }
 
-    public function showOrder(string $engine, int $order): JsonResponse
+    public function showOrder(int $order): JsonResponse
     {
-        $found = $engine === 'eloquent'
-            ? $this->eloquent->order($order)
-            : $this->sql->order($order);
+        $found = $this->eloquent->order($order);
 
         $payload = $found instanceof Order
             ? $this->orderPayload($found)
             : $found;
 
-        return ApiResponse::success($payload, 'Optimized order retrieved successfully.');
+        return ApiResponse::success(
+            $payload,
+            'Optimized order retrieved successfully.'
+        );
     }
 
     private function paginationInput(Request $request): array
@@ -102,8 +137,10 @@ final class OptimizedPerformanceController
         ];
     }
 
-    private function productPayload(Product $product, bool $includeDescription = false): array
-    {
+    private function productPayload(
+        Product $product,
+        bool $includeDescription = false
+    ): array {
         $payload = [
             'id' => $product->id,
             'name' => $product->name,
@@ -148,7 +185,12 @@ final class OptimizedPerformanceController
                 'product_name' => $item->product?->name,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
-                'line_total' => number_format($item->unit_price * $item->quantity, 2, '.', ''),
+                'line_total' => number_format(
+                    $item->unit_price * $item->quantity,
+                    2,
+                    '.',
+                    ''
+                ),
             ])->all(),
             'created_at' => $order->created_at?->format('Y-m-d'),
             'updated_at' => $order->updated_at?->format('Y-m-d'),

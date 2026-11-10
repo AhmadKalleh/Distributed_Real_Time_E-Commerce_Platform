@@ -4,7 +4,6 @@ namespace App\Modules\Catalog\Presentation\Http\Controllers;
 
 use App\Modules\Catalog\Application\Caching\CatalogCacheKeys;
 use App\Modules\Catalog\Application\DTOs\Products\CreateProductDTO;
-use App\Modules\Catalog\Application\DTOs\Products\UpdateProductDTO;
 use App\Modules\Catalog\Application\UseCases\Products\CreateProductUseCase;
 use App\Modules\Catalog\Application\DTOs\Products\ListProductsDTO;
 use App\Modules\Catalog\Application\DTOs\Products\ShowProductDTO;

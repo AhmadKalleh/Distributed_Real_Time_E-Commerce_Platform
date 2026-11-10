@@ -1,4 +1,5 @@
 import http from 'k6/http';
+import exec from 'k6/execution';
 import { check, sleep } from 'k6';
 
 const baseUrl = (__ENV.API_BASE_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
@@ -14,7 +15,7 @@ if (!['baseline', 'eloquent', 'sql'].includes(engine)) {
 
 const apiPath = engine === 'baseline'
     ? '/api/performance/baseline'
-    : `/api/performance/optimized/${engine}`;
+    : '/api/performance/optimized';
 
 const ENDPOINTS = ['products-list', 'product-details', 'orders-list', 'order-details'];
 
@@ -35,11 +36,29 @@ export const options = {
     },
 };
 
+
 function get(path, name) {
-    const response = http.get(`${baseUrl}${apiPath}${path}`, {
+    const url = `${baseUrl}${apiPath}${path}`;
+
+    const response = http.get(url, {
         tags: { endpoint: name },
         timeout: '60s',
     });
+
+    if (response.status !== 200) {
+        console.error('\n========== FIRST FAILURE ==========');
+        console.error(`Endpoint : ${name}`);
+        console.error(`URL      : ${url}`);
+        console.error(`Status   : ${response.status}`);
+        console.error(`Error    : ${response.error || 'N/A'}`);
+        console.error(`Body     : ${String(response.body || '').substring(0, 2000)}`);
+        console.error('===================================\n');
+
+        // Stop the entire k6 test immediately.
+        exec.test.abort(
+            `Test aborted: ${name} returned HTTP ${response.status}`
+        );
+    }
 
     check(response, {
         [`${name} returns HTTP 200`]: (result) => result.status === 200,
