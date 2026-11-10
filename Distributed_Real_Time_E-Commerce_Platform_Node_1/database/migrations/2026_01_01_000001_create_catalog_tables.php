@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->timestamps();
 
             $table->index(['category_id', 'is_active', 'id']);
+            $table->index(['is_active', 'id'], 'products_is_active_id_index');
         });
 
         Schema::create('product_images', function (Blueprint $table) {

@@ -30,6 +30,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'performance_testing' => (bool) env('PERFORMANCE_TESTING', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

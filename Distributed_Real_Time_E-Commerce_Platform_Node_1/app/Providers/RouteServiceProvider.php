@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use App\Http\Middleware\EnsurePerformanceTesting;
+use LogicException;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -33,7 +35,17 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
+            if (config('app.performance_testing')) {
+                if ($this->app->environment('production')) {
+                    throw new LogicException('Performance test routes cannot be enabled in production.');
+                }
+
+                Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/performance.php'));
+            }
+
+                Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
 

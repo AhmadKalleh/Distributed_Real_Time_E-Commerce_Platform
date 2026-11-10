@@ -14,5 +14,9 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ProductSeeder::class,
         ]);
+
+        if (config('app.performance_testing')) {
+            $this->call(PerformanceSeeder::class);
+        }
     }
 }

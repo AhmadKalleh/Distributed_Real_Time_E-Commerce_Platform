@@ -63,6 +63,27 @@ return [
             ]) : [],
         ],
 
+        'mysql_replica' => [
+            'driver' => 'mysql',
+            'read' => [
+                'host' => ['127.0.0.1'],
+                'port' => 3309,
+            ],
+            'write' => [
+                'host' => ['127.0.0.1'],
+                'port' => 3308,
+            ],
+            'sticky' => true,
+            'database' => 'perf_db',
+            'username' => 'root',
+            'password' => 'root',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

@@ -4,27 +4,22 @@ use App\Modules\Catalog\Domain\Entities\Product;
 use App\Modules\Catalog\Presentation\Http\Controllers\CategoryController;
 use App\Modules\Catalog\Presentation\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\StickyReadAfterWrite;
 
-Route::prefix('v1/')->middleware('auth:api')->group(function () {
-    // Categories
-        Route::get('categories', [
-            CategoryController::class,
-            'index',
-        ]);
+Route::prefix('v1/')->middleware(['auth:api', StickyReadAfterWrite::class])->group(function () {
 
-        // Products
-        Route::get('products', [
-            ProductController::class,
-            'index',
-        ])->can('viewAny', Product::class);
+    // قراءات: ETag + 304
+    Route::middleware('cache.headers:private;max_age=0;etag')->group(function () {
+        Route::get('categories', [CategoryController::class, 'index']);
 
-        Route::get('products/{product}', [
-            ProductController::class,
-            'show',
-        ])->can('viewAny', Product::class);
+        Route::get('products', [ProductController::class, 'index'])
+            ->can('viewAny', Product::class);
 
-        Route::post('products', [
-            ProductController::class,
-            'store',
-        ])->can('create', Product::class);
+        Route::get('products/{product}', [ProductController::class, 'show'])
+            ->can('viewAny', Product::class);
+    });
+
+    // كتابة: بدون ETag
+    Route::post('products', [ProductController::class, 'store'])
+        ->can('create', Product::class);
 });

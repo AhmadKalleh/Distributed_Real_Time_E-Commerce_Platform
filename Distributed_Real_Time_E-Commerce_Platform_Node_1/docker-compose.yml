@@ -22,6 +22,9 @@ services:
             DB_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
             INVENTORY_GRPC_TARGET: "${INVENTORY_GRPC_TARGET:-host.docker.internal:50051}"
             CACHE_DRIVER: database
+            REDIS_CLIENT: predis
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
             SESSION_DRIVER: array
             QUEUE_CONNECTION: sync
             FILESYSTEM_DISK: local
@@ -57,6 +60,18 @@ services:
             interval: 5s
             timeout: 5s
             retries: 30
+        restart: unless-stopped
+
+    redis:
+        image: redis:7-alpine
+        container_name: ecommerce-redis
+        ports:
+            - "6380:6379"
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
         restart: unless-stopped
 
 volumes:

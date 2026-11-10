@@ -7,6 +7,7 @@ use App\Modules\Catalog\Application\Contracts\CategoryRepositoryInterface;
 use App\Modules\Catalog\Application\Contracts\ProductImageStorageInterface;
 use App\Modules\Catalog\Application\Contracts\ProductCatalogInterface;
 use App\Modules\Catalog\Application\Contracts\ProductRepositoryInterface;
+use App\Modules\Catalog\Domain\Entities\Category;
 use App\Modules\Catalog\Domain\Entities\Product;
 use App\Modules\Catalog\Infrastructure\Persistence\EloquentCategoryRepository;
 use App\Modules\Catalog\Infrastructure\Persistence\EloquentProductRepository;
@@ -15,6 +16,9 @@ use App\Modules\Catalog\Infrastructure\Storage\LocalProductImageStorage;
 use App\Modules\Catalog\Presentation\Http\Policies\ProductPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Modules\Catalog\Infrastructure\Caching\CategoryCacheObserver;
+use App\Modules\Catalog\Infrastructure\Caching\ProductCacheObserver;
+
 
 final class CatalogServiceProvider extends ServiceProvider
 {
@@ -30,5 +34,8 @@ final class CatalogServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Product::class, ProductPolicy::class);
+
+        Product::observe(ProductCacheObserver::class);
+        Category::observe(CategoryCacheObserver::class);
     }
 }
