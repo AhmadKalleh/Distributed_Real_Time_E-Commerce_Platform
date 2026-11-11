@@ -5,12 +5,12 @@ use App\Modules\Orders\Application\Contracts\OrderRepositoryInterface;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Orders\Domain\Enums\OrderStatus;
 use App\Modules\Orders\Domain\Entities\Order;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
 
 final class EloquentOrderRepository implements OrderRepositoryInterface
 {
-    public function getPaginatedOrders(User $user, array $validated): LengthAwarePaginator
+    public function getPaginatedOrders(User $user, array $validated): CursorPaginator
     {
         $perPage = $validated['per_page'] ?? 15;
         $query = Order::query();
@@ -20,11 +20,11 @@ final class EloquentOrderRepository implements OrderRepositoryInterface
         }
 
         return $query
-            ->when($validated['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
-            ->with('items.product')
-            ->latest('id')
-            ->paginate($perPage)
-            ->withQueryString();
+        ->when($validated['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+        ->with('items.product')
+        ->latest('id') // أو ->orderByDesc('id') لضمان الترتيب الصحيح للمؤشر
+        ->cursorPaginate($perPage, ['*'], 'cursor') // استبدلنا paginate بـ cursorPaginate
+        ->appends(collect($validated)->except('cursor')->all());
     }
 
     /**

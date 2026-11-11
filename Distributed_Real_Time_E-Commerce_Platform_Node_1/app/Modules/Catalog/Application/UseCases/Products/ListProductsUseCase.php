@@ -4,7 +4,7 @@ namespace App\Modules\Catalog\Application\UseCases\Products;
 
 use App\Modules\Catalog\Application\Contracts\CatalogServiceInterface;
 use App\Modules\Catalog\Application\DTOs\Products\ListProductsDTO;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 
 final readonly class ListProductsUseCase
 {
@@ -14,7 +14,7 @@ final readonly class ListProductsUseCase
 
     public function execute(
         ListProductsDTO $dto
-    ): LengthAwarePaginator {
+    ): CursorPaginator {
         return $this->catalog->listProducts($dto);
     }
 }

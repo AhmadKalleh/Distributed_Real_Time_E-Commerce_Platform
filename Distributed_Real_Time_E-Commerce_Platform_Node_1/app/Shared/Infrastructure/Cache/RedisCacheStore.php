@@ -73,4 +73,24 @@ final class RedisCacheStore implements CacheStore
             Log::warning('cache bump failed', ['group' => $group, 'error' => $e->getMessage()]);
         }
     }
+
+    public function has(string $key): bool
+    {
+        try {
+            return (bool) Redis::exists($key);
+        } catch (Throwable $e) {
+            Log::warning('cache exists check failed, falling back', ['key' => $key, 'error' => $e->getMessage()]);
+            return false; // في حال سقوط اليديس، نعتبر أنه غير موجود لتجنب توقف التطبيق
+        }
+    }
+
+    public function put(string $key, mixed $value, int $ttlSeconds): void
+    {
+        try {
+            $payload = is_scalar($value) ? $value : json_encode($value, JSON_THROW_ON_ERROR);
+            Redis::setex($key, $ttlSeconds, $payload);
+        } catch (Throwable $e) {
+            Log::warning('cache put failed', ['key' => $key, 'error' => $e->getMessage()]);
+        }
+    }
 }
