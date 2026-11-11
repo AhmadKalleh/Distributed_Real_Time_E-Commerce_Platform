@@ -18,7 +18,7 @@ use App\Modules\Catalog\Domain\Exceptions\ProductUnavailableException;
 use App\Modules\Catalog\Domain\Exceptions\ProductSlugAlreadyExistsException;
 use App\Modules\Catalog\Domain\Services\ProductSlugGenerator;
 use App\Shared\Contracts\InventoryGatewayInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
@@ -40,7 +40,7 @@ final readonly class CatalogService implements CatalogServiceInterface, ProductC
     }
 
 
-    public function listProducts(ListProductsDTO $dto): LengthAwarePaginator
+    public function listProducts(ListProductsDTO $dto): CursorPaginator
     {
         $filters = $dto->filters;
 

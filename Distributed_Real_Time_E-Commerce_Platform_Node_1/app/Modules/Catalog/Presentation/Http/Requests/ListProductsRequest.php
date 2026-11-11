@@ -19,7 +19,7 @@ final class ListProductsRequest extends FormRequest
             'min_price' => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'max_price' => ['sometimes', 'nullable', 'numeric', 'gte:min_price'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'page' => ['sometimes', 'integer', 'min:1'],
+            'cursor' => ['nullable', 'string', 'max:512'],
             'sort' => ['sometimes', 'in:name,price,created_at'],
             'direction' => ['sometimes', 'in:asc,desc'],
             'include_inactive' => ['sometimes', 'boolean'],

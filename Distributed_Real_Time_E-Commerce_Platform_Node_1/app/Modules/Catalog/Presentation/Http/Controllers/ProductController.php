@@ -31,19 +31,18 @@ final class ProductController
         );
 
         $payload = $cache->remember($key, CatalogCacheKeys::LIST_TTL, function () use ($request, $useCase) {
-            /** @var \Illuminate\Pagination\LengthAwarePaginator $paginator */
+            /** @var \Illuminate\Pagination\CursorPaginator $paginator */
             $paginator = $useCase->execute(ListProductsDTO::fromArray($request->validated()));
 
             return [
                 'items' => ProductResource::collection($paginator->getCollection())->resolve(),
                 'pagination' => [
-                    'current_page' => $paginator->currentPage(),
                     'per_page' => $paginator->perPage(),
-                    'total' => $paginator->total(),
-                    'last_page' => $paginator->lastPage(),
                     'has_more_pages' => $paginator->hasMorePages(),
+                    'next_cursor' => $paginator->nextCursor()?->encode(), // جلب مؤشر الصفحة التالية وتشغيله
+                    'prev_cursor' => $paginator->previousCursor()?->encode(),
                     'next_page_url' => $paginator->nextPageUrl(),
-                    'prev_page_url' => $paginator->previousPageUrl(),
+                    'prev_page_url' => $paginator->previousPageUrl(), // جلب مؤشر الصفحة السابقة
                 ],
             ];
         });

@@ -18,7 +18,7 @@ use App\Modules\Orders\Domain\Exceptions\InsufficientStockException;
 use App\Modules\Orders\Domain\Exceptions\InvalidStatusTransitionException;
 use App\Modules\Orders\Domain\Exceptions\InventoryCompensationFailedException;
 use App\Modules\Orders\Domain\Exceptions\InventoryServiceUnavailableException;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -34,7 +34,7 @@ final readonly class OrderService implements OrderServiceInterface
         private ProductCatalogInterface $catalog,
     ) {}
 
-    public function listOrders(ListOrdersDTO $dto): LengthAwarePaginator
+    public function listOrders(ListOrdersDTO $dto): CursorPaginator
     {
         return $this->orderRepository->getPaginatedOrders(
             $dto->customer,
@@ -225,7 +225,7 @@ final readonly class OrderService implements OrderServiceInterface
         }
     }
 
-    
+
     private function failIfOrderSaveFailureIsForced(): void
     {
         if (app()->environment(['local', 'testing']) &&

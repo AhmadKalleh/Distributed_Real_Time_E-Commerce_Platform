@@ -16,4 +16,7 @@ interface CacheStore
 
     /** رفع النسخة = إبطال كل مفاتيح المجموعة. */
     public function bump(string $group): void;
+
+    public function has(string $key): bool;
+    public function put(string $key, mixed $value, int $ttlSeconds): void;
 }

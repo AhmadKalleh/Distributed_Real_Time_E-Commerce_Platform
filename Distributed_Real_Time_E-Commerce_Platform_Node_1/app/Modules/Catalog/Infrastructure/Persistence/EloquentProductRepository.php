@@ -5,13 +5,13 @@ namespace App\Modules\Catalog\Infrastructure\Persistence;
 use App\Modules\Catalog\Application\Contracts\ProductRepositoryInterface;
 use App\Modules\Catalog\Application\DTOs\Products\StoredImageDTO;
 use App\Modules\Catalog\Domain\Entities\Product;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class EloquentProductRepository implements ProductRepositoryInterface
 {
-    public function paginate(array $filters, int $perPage): LengthAwarePaginator
+    public function paginate(array $filters, int $perPage): CursorPaginator
     {
         $query = Product::query()
             ->select(['id', 'category_id', 'name', 'slug', 'description', 'price', 'is_active', 'created_at', 'updated_at'])
@@ -51,7 +51,8 @@ final class EloquentProductRepository implements ProductRepositoryInterface
             $query->orderByDesc('id');
         }
 
-        return $query->paginate($perPage)->withQueryString();
+        return $query->cursorPaginate($perPage, ['*'], 'cursor')
+            ->appends(collect($filters)->except('cursor')->all());
     }
 
     public function findById(int $id): ?Product

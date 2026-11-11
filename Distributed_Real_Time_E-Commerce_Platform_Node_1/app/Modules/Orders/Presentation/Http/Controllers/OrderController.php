@@ -28,9 +28,11 @@ class OrderController extends Controller
         $validated = $request->validate([
             'status'   => ['nullable', Rule::enum(OrderStatus::class)],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'cursor' => ['nullable', 'string', 'max:512'],
+
         ]);
 
-        // استدعاء الخدمة لجلب البيانات
+        /** @var \Illuminate\Pagination\CursorPaginator $paginator */
         $orders = $useCase->execute(new ListOrdersDTO($request->user(), $validated));
 
         // التحقق مما إذا كانت الطلبات فارغة لتخصيص الرسالة
@@ -41,14 +43,13 @@ class OrderController extends Controller
         return ApiResponse::success([
             'orders' => OrderResource::collection($orders),
             'pagination' => [
-                'current_page' => $orders->currentPage(),
-                'last_page'    => $orders->lastPage(),
-                'per_page'     => $orders->perPage(),
-                'total'        => $orders->total(),
-                'has_more'     => $orders->hasMorePages(),
-                'next_page_url' => $orders->nextPageUrl(),     // رابط الصفحة التالية (سيكون null إذا كانت الأخيرة)
-                'prev_page_url' => $orders->previousPageUrl(), // رابط الصفحة السابقة (سيكون null إذا كانت الأولى)
-            ]
+                'per_page' => $orders->perPage(),
+                'has_more_pages' => $orders->hasMorePages(),
+                'next_cursor' => $orders->nextCursor()?->encode(), // جلب مؤشر الصفحة التالية وتشغيله
+                'prev_cursor' => $orders->previousCursor()?->encode(), // جلب مؤشر الصفحة السابقة
+                'next_page_url' => $orders->nextPageUrl(),
+                'prev_page_url' => $orders->previousPageUrl(),
+            ],
         ], $message);
     }
 
