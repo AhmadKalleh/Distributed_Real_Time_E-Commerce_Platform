@@ -15,8 +15,12 @@ services:
             JWT_TTL: 60
             LOG_CHANNEL: stderr
             DB_CONNECTION: mysql
-            DB_HOST: db
+            DB_HOST: mysql-primary
             DB_PORT: 3306
+            DB_READ_HOST: mysql-replica
+            DB_READ_PORT: 3306
+            DB_WRITE_HOST: mysql-primary
+            DB_WRITE_PORT: 3306
             DB_DATABASE: ecommerce
             DB_USERNAME: ecommerce
             DB_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
@@ -41,20 +45,61 @@ services:
         volumes:
             - app-storage:/var/www/html/storage/app
         depends_on:
-            db:
+            mysql-primary:
+                condition: service_healthy
+            mysql-replica:
                 condition: service_healthy
         restart: unless-stopped
 
-    db:
+    mysql-primary:
         image: mysql:8.0
-        container_name: ecommerce-db
+        container_name: ecommerce-db-primary
+        command: >
+            --server-id=1
+            --log-bin=mysql-bin
+            --gtid-mode=ON
+            --enforce-gtid-consistency=ON
         environment:
             MYSQL_DATABASE: ecommerce
             MYSQL_USER: ecommerce
             MYSQL_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
             MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-ecommerce-root-pass}"
+            MYSQL_REPLICATION_PASSWORD: "${DB_REPLICATION_PASSWORD:-ecommerce-replica-pass}"
+        ports:
+            - "${DB_PRIMARY_PORT:-3308}:3306"
         volumes:
-            - db-data:/var/lib/mysql
+            - db-primary-data:/var/lib/mysql
+            - ./docker/replication/primary-init.sh:/docker-entrypoint-initdb.d/10-replication-user.sh:ro
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${DB_ROOT_PASSWORD:-ecommerce-root-pass}"]
+            interval: 5s
+            timeout: 5s
+            retries: 30
+        restart: unless-stopped
+
+    mysql-replica:
+        image: mysql:8.0
+        container_name: ecommerce-db-replica
+        command: >
+            --server-id=2
+            --log-bin=mysql-bin
+            --gtid-mode=ON
+            --enforce-gtid-consistency=ON
+            --relay-log=relay-bin
+        environment:
+            MYSQL_DATABASE: ecommerce
+            MYSQL_USER: ecommerce
+            MYSQL_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
+            MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-ecommerce-root-pass}"
+            MYSQL_REPLICATION_PASSWORD: "${DB_REPLICATION_PASSWORD:-ecommerce-replica-pass}"
+        ports:
+            - "${DB_REPLICA_PORT:-3309}:3306"
+        volumes:
+            - db-replica-data:/var/lib/mysql
+            - ./docker/replication/replica-init.sh:/docker-entrypoint-initdb.d/10-replication-source.sh:ro
+        depends_on:
+            mysql-primary:
+                condition: service_healthy
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${DB_ROOT_PASSWORD:-ecommerce-root-pass}"]
             interval: 5s
@@ -75,5 +120,6 @@ services:
         restart: unless-stopped
 
 volumes:
-    db-data:
+    db-primary-data:
+    db-replica-data:
     app-storage:

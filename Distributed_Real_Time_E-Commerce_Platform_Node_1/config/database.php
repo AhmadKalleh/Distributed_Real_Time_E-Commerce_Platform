@@ -51,6 +51,15 @@ return [
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
+            'read' => [
+                'host' => [env('DB_READ_HOST', env('DB_HOST', '127.0.0.1'))],
+                'port' => env('DB_READ_PORT', env('DB_PORT', '3306')),
+            ],
+            'write' => [
+                'host' => [env('DB_WRITE_HOST', env('DB_HOST', '127.0.0.1'))],
+                'port' => env('DB_WRITE_PORT', env('DB_PORT', '3306')),
+            ],
+            'sticky' => env('DB_STICKY', true),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -61,27 +70,6 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-        ],
-
-        'mysql_replica' => [
-            'driver' => 'mysql',
-            'read' => [
-                'host' => ['127.0.0.1'],
-                'port' => 3309,
-            ],
-            'write' => [
-                'host' => ['127.0.0.1'],
-                'port' => 3308,
-            ],
-            'sticky' => true,
-            'database' => 'perf_db',
-            'username' => 'root',
-            'password' => 'root',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'strict' => true,
-            'engine' => null,
         ],
 
         'pgsql' => [
