@@ -38,6 +38,17 @@ services:
             MAIL_ENCRYPTION: "${MAIL_ENCRYPTION:-tls}"
             MAIL_FROM_ADDRESS: "${MAIL_FROM_ADDRESS:-noreply@example.test}"
             MAIL_FROM_NAME: "E-Commerce Platform"
+            RABBITMQ_HOST: rabbitmq
+            RABBITMQ_PORT: 5672
+            RABBITMQ_USER: "${RABBITMQ_USER:-ecommerce}"
+            RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD:-ecommerce-local-pass}"
+            PUSHER_APP_ID: "${PUSHER_APP_ID:-ecommerce-app}"
+            PUSHER_APP_KEY: "${PUSHER_APP_KEY:-ecommerce-key}"
+            PUSHER_APP_SECRET: "${PUSHER_APP_SECRET:-ecommerce-secret}"
+            PUSHER_APP_CLUSTER: mt1
+            PUSHER_HOST: soketi
+            PUSHER_PORT: 6001
+            PUSHER_SCHEME: http
         volumes:
             - app-storage:/var/www/html/storage/app
         depends_on:
@@ -74,6 +85,37 @@ services:
             retries: 10
         restart: unless-stopped
 
+    rabbitmq:
+        image: rabbitmq:4-management
+        container_name: ecommerce-rabbitmq
+        hostname: rabbitmq
+        environment:
+            RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER:-ecommerce}"
+            RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD:-ecommerce-local-pass}"
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
+        healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+            interval: 10s
+            timeout: 10s
+            retries: 10
+        restart: unless-stopped
+
+    soketi:
+        image: quay.io/soketi/soketi:latest-16-alpine
+        container_name: ecommerce-soketi
+        environment:
+            SOKETI_DEFAULT_APP_ID: "${PUSHER_APP_ID:-ecommerce-app}"
+            SOKETI_DEFAULT_APP_KEY: "${PUSHER_APP_KEY:-ecommerce-key}"
+            SOKETI_DEFAULT_APP_SECRET: "${PUSHER_APP_SECRET:-ecommerce-secret}"
+        ports:
+            - "6001:6001"
+        restart: unless-stopped
+
 volumes:
     db-data:
     app-storage:
+    rabbitmq-data:
