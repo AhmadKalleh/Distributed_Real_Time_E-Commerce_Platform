@@ -21,7 +21,7 @@ class PerformanceSeeder extends Seeder
 
     public function run(): void
     {
-        
+
         $faker = FakerFactory::create();
         $faker->seed(20261108);
         mt_srand(20261108);
@@ -101,7 +101,7 @@ class PerformanceSeeder extends Seeder
     {
         $this->command->info('Generating users...');
 
-        $password = Hash::make('PerformanceTest@123');
+        $password = Hash::make('password');
         $now = now()->toDateTimeString();
 
         $rows = [];

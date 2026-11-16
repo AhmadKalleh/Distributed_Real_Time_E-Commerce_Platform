@@ -1,0 +1,16 @@
+-READ-YOUR-WRITES PROOF - 2026-11-12 09:15:44
+server_id tells which database answered (PRIMARY = writes, REPLICA = normal reads).
+Rule: after a write, the same user reads from the PRIMARY for 5 seconds.
+
+1) User 1 opens product #1 (normal read)
+   answered by: REPLICA (server_id=2) | row found: yes | PASS
+
+2) User 1 creates product #5002 (write goes to the PRIMARY)
+
+3) User 1 opens #5002 right after the write
+   answered by: PRIMARY (server_id=1) | row found: yes | PASS
+
+4) User 1 opens #5002 again after the window
+   answered by: REPLICA (server_id=2) | row found: yes | PASS
+
+RESULT: PASS
