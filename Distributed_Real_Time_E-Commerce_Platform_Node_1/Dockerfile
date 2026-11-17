@@ -22,7 +22,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends default-mysql-client libstdc++6 zlib1g-dev libssl-dev $PHPIZE_DEPS \
     && pecl install grpc-1.57.0 \
     && docker-php-ext-enable grpc \
-    && docker-php-ext-install pdo_mysql opcache \
+    && docker-php-ext-install pdo_mysql opcache sockets bcmath \
     && apt-get purge -y --auto-remove $PHPIZE_DEPS \
     && rm -rf /var/lib/apt/lists/*
 

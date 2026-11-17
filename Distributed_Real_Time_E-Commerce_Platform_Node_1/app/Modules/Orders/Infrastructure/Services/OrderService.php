@@ -21,6 +21,7 @@ use App\Modules\Orders\Domain\Exceptions\InventoryServiceUnavailableException;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use RuntimeException;
 use Throwable;
@@ -74,9 +75,18 @@ final readonly class OrderService implements OrderServiceInterface
         );
 
         // Publish only after the local database transaction has committed.
-        OrderPlaced::dispatch($order);
+        $this->publish(new OrderPlaced($order));
 
         return $order;
+    }
+
+    private function publish(object $event): void
+    {
+        try {
+            Event::dispatch($event);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
     }
 
     public function changeOrderStatus(ChangeOrderStatusDTO $dto): Order

@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+mysql -uroot -p"$MYSQL_ROOT_PASSWORD" <<-EOSQL
+    CREATE USER IF NOT EXISTS 'replicator'@'%' IDENTIFIED BY '${MYSQL_REPLICATION_PASSWORD}';
+    GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'replicator'@'%';
+EOSQL

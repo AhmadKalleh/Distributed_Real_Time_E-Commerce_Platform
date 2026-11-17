@@ -4,7 +4,12 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Shared\Contracts\CacheStore;
+use App\Shared\Contracts\MessageConsumer;
+use App\Shared\Contracts\MessagePublisher;
 use App\Shared\Infrastructure\Cache\RedisCacheStore;
+use App\Shared\Infrastructure\Messaging\RabbitMqConsumer;
+use App\Shared\Infrastructure\Messaging\RabbitMqPublisher;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(CacheStore::class,RedisCacheStore::class);
+        $this->app->singleton(MessagePublisher::class, RabbitMqPublisher::class);
+        $this->app->singleton(MessageConsumer::class, RabbitMqConsumer::class);
     }
 
     /**

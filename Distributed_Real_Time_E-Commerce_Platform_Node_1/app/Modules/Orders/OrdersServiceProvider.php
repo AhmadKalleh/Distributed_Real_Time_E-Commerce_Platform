@@ -5,18 +5,23 @@ namespace App\Modules\Orders;
 use App\Modules\Orders\Application\Contracts\OrderRepositoryInterface;
 use App\Modules\Orders\Application\Contracts\OrderServiceInterface;
 use App\Modules\Orders\Domain\Entities\Order;
+use App\Modules\Orders\Domain\Events\OrderPlaced;
+use App\Modules\Orders\Domain\Events\OrderStatusChanged;
 use App\Modules\Orders\Infrastructure\Grpc\InventoryGrpcClient;
 use App\Modules\Orders\Infrastructure\Persistence\EloquentOrderRepository;
 use App\Modules\Orders\Infrastructure\Services\OrderService;
 use App\Modules\Orders\Presentation\Http\Policies\OrderPolicy;
+use App\Modules\Orders\Presentation\Broadcasting\BroadcastOrderPlaced;
+use App\Modules\Orders\Presentation\Broadcasting\BroadcastOrderStatusChanged;
 use App\Shared\Contracts\InventoryGatewayInterface;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\Broadcast;
 final class OrdersServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -42,5 +47,14 @@ final class OrdersServiceProvider extends ServiceProvider
         Route::middleware('api')
             ->prefix('api/v1')
             ->group(__DIR__.'/Presentation/Http/routes.php');
+
+            // Real-time: the admin dashboard and the order tracking page.
+        Event::listen(OrderPlaced::class, BroadcastOrderPlaced::class);
+        Event::listen(OrderStatusChanged::class, BroadcastOrderStatusChanged::class);
+
+        // Channel authorization endpoint: POST /api/v1/broadcasting/auth (JWT required).
+        Broadcast::routes(['prefix' => 'api/v1', 'middleware' => ['api', 'auth:api']]);
+        require __DIR__.'/Presentation/Broadcasting/channels.php';
+
     }
 }

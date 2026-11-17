@@ -2,10 +2,10 @@
 
 namespace App\Modules\Notifications\Application\Contracts;
 
-use App\Modules\Identity\Domain\Entities\User;
-use App\Modules\Notifications\Domain\Entities\UserNotification;
+use App\Modules\Notifications\Application\DTOs\Notifications\EmailMessageDTO;
 
 interface NotificationMailGatewayInterface
 {
-    public function queue(User $user, UserNotification $notification): void;
+    /** Sends the email right now (used by the worker, never by the API request). */
+    public function send(EmailMessageDTO $email): void;
 }
