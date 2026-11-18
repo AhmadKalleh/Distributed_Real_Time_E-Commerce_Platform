@@ -2,7 +2,7 @@
 
 namespace App\Modules\Notifications\Infrastructure\Services;
 
-use App\Modules\Notifications\Application\Contracts\NotificationMailGatewayInterface;
+use App\Modules\Notifications\Application\Contracts\NotificationChannelInterface;
 use App\Modules\Notifications\Application\Contracts\NotificationRepositoryInterface;
 use App\Modules\Notifications\Application\Contracts\NotificationServiceInterface;
 use App\Modules\Notifications\Application\DTOs\Notifications\ListNotificationsDTO;
@@ -10,13 +10,19 @@ use App\Modules\Notifications\Application\DTOs\Notifications\MarkNotificationAsR
 use App\Modules\Notifications\Application\DTOs\Notifications\SendNotificationDTO;
 use App\Modules\Notifications\Domain\Entities\UserNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Throwable;
 
-/** Implements notification workflows using Notifications-owned ports. */
+/**
+ * Implements notification workflows.
+ * Open for extension: new delivery ways are added as NotificationChannelInterface
+ * implementations, without touching this class (Open/Closed Principle).
+ */
 final readonly class NotificationService implements NotificationServiceInterface
 {
+    /** @param iterable<NotificationChannelInterface> $channels */
     public function __construct(
         private NotificationRepositoryInterface $notifications,
-        private NotificationMailGatewayInterface $mail,
+        private iterable $channels,
     ) {}
 
     public function listNotifications(ListNotificationsDTO $dto): LengthAwarePaginator
@@ -47,8 +53,15 @@ final readonly class NotificationService implements NotificationServiceInterface
             $dto->data,
         );
 
-        // Email is queued after the in-app notification is persisted.
-        $this->mail->queue($dto->user, $notification);
+        // The in-app notification is saved. Each channel delivers it on its own:
+        // a broker or SMTP outage must never fail order processing nor block another channel.
+        foreach ($this->channels as $channel) {
+            try {
+                $channel->deliver($dto->user, $notification);
+            } catch (Throwable $exception) {
+                report($exception);
+            }
+        }
 
         return $notification;
     }

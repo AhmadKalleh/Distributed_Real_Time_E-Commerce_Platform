@@ -37,10 +37,10 @@ until php -r 'try { new PDO("mysql:host=".getenv("DB_HOST").";port=".getenv("DB_
     sleep 2
 done
 
-php artisan migrate --force
-
 if [ "${SEED_DEMO_DATA:-true}" = "true" ]; then
-    php artisan db:seed --force
+    php artisan migrate --force --seed
+else
+    php artisan migrate --force
 fi
 
 php artisan storage:link 2>/dev/null || true

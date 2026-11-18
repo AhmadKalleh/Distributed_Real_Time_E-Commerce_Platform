@@ -3,23 +3,16 @@
 namespace App\Modules\Notifications\Infrastructure\Mail;
 
 use App\Modules\Notifications\Domain\Entities\UserNotification;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
 /**
- * Email copy of an in-app notification. Queued, so SMTP latency never slows
- * down the API request that triggered it.
+ * Email copy of an in-app notification.
+ * Not queued by Laravel anymore: it is sent by the RabbitMQ worker.
  */
-class UserNotificationMail extends Mailable implements ShouldQueue
+class UserNotificationMail extends Mailable
 {
-    use Queueable, SerializesModels;
-
-    public int $tries = 3;
-
     public function __construct(public readonly UserNotification $notification)
     {
     }
