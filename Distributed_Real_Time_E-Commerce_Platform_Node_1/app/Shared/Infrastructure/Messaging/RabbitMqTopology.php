@@ -20,7 +20,7 @@ final class RabbitMqTopology
 
     public static function declare(AMQPChannel $channel, string $topic): void
     {
-        // Dead-letter side 
+        // Dead-letter side
         $channel->exchange_declare(self::DEAD_LETTER_EXCHANGE, 'direct', false, true, false);
         $channel->queue_declare(self::deadLetterQueue($topic), false, true, false, false);
         $channel->queue_bind(self::deadLetterQueue($topic), self::DEAD_LETTER_EXCHANGE, $topic);
