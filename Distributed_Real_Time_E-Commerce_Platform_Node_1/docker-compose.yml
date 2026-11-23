@@ -184,6 +184,35 @@ services:
                 condition: service_healthy
         restart: unless-stopped
 
+    relay:
+        build: .
+        image: ecommerce-api
+        entrypoint: ["php", "artisan", "messages:relay-held", "--interval=5"]
+        environment:
+            APP_ENV: production
+            APP_DEBUG: "false"
+            LOG_CHANNEL: stderr
+            CACHE_DRIVER: array
+            SESSION_DRIVER: array
+            QUEUE_CONNECTION: sync
+            DB_CONNECTION: mysql
+            DB_HOST: mysql-primary
+            DB_PORT: 3306
+            DB_READ_HOST: mysql-replica
+            DB_READ_PORT: 3306
+            DB_WRITE_HOST: mysql-primary
+            DB_WRITE_PORT: 3306
+            DB_DATABASE: ecommerce
+            DB_USERNAME: ecommerce
+            DB_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
+            <<: [*rabbitmq-env]
+        depends_on:
+            mysql-primary:
+                condition: service_healthy
+            app:
+                condition: service_started
+        restart: unless-stopped
+
 volumes:
     db-primary-data:
     db-replica-data:
