@@ -2,9 +2,11 @@
 namespace App\Modules\Orders\Infrastructure\Persistence;
 
 use App\Modules\Orders\Application\Contracts\OrderRepositoryInterface;
+use App\Modules\Orders\Application\DTOs\Orders\StatusTransitionResult;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Orders\Domain\Enums\OrderStatus;
 use App\Modules\Orders\Domain\Entities\Order;
+use App\Modules\Orders\Domain\Exceptions\OrderStatusConflictException;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -65,18 +67,42 @@ final class EloquentOrderRepository implements OrderRepositoryInterface
         });
     }
 
-    public function lockAndFind(int $orderId): Order
+    public function transitionStatus(int $orderId, OrderStatus $next): StatusTransitionResult
     {
-        return Order::whereKey($orderId)->lockForUpdate()->firstOrFail();
-    }
+        return DB::transaction(function () use ($orderId, $next) {
+            $order = Order::query()
+                ->useWritePdo()
+                ->whereKey($orderId)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-    public function updateStatus(Order $order, OrderStatus $next): Order
-    {
-        return DB::transaction(function () use ($order, $next) {
-            $lockedOrder = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
-            $lockedOrder->update(['status' => $next]);
+            $from = $order->status;
 
-            return $lockedOrder->fresh(['items.product']);
+            if (! $from->canTransitionTo($next)) {
+                throw new OrderStatusConflictException($from->value, $next->value);
+            }
+
+            $order->status = $next;
+            $order->save();
+
+            DB::table('order_status_outbox')->insert([
+                'order_id' => $order->id,
+                'event_type' => 'order.status_changed',
+                'from_status' => $from->value,
+                'to_status' => $next->value,
+                'payload' => json_encode([
+                    'order_id' => $order->id,
+                    'from' => $from->value,
+                    'to' => $next->value,
+                ], JSON_THROW_ON_ERROR),
+                'recorded_at' => now(),
+            ]);
+
+            return new StatusTransitionResult(
+                $order->fresh(['items.product']),
+                $from,
+                $next,
+            );
         });
     }
 }

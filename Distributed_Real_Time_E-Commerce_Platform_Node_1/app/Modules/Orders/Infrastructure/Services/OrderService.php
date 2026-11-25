@@ -15,7 +15,6 @@ use App\Modules\Orders\Domain\Enums\OrderStatus;
 use App\Modules\Orders\Domain\Events\OrderPlaced;
 use App\Modules\Orders\Domain\Events\OrderStatusChanged;
 use App\Modules\Orders\Domain\Exceptions\InsufficientStockException;
-use App\Modules\Orders\Domain\Exceptions\InvalidStatusTransitionException;
 use App\Modules\Orders\Domain\Exceptions\InventoryCompensationFailedException;
 use App\Modules\Orders\Domain\Exceptions\InventoryServiceUnavailableException;
 use Illuminate\Contracts\Pagination\CursorPaginator;
@@ -91,39 +90,23 @@ final readonly class OrderService implements OrderServiceInterface
 
     public function changeOrderStatus(ChangeOrderStatusDTO $dto): Order
     {
-        $order = $dto->order;
-        $next = $dto->nextStatus;
-        $current = $order->status;
+        $transition = $this->orderRepository->transitionStatus(
+            $dto->order->id,
+            $dto->nextStatus,
+        );
 
-        // A repeated Cancelled request safely retries a previously failed release.
-        if ($current === OrderStatus::Cancelled &&
-            $next === OrderStatus::Cancelled &&
-            $order->inventory_reservation_reference) {
-            $this->releaseCancelledOrderReservation($order);
+        $this->publish(new OrderStatusChanged(
+            $transition->order,
+            $transition->fromStatus,
+            $transition->toStatus,
+        ));
 
-            return $order->fresh(['items.product']);
+        if ($transition->toStatus === OrderStatus::Cancelled &&
+            $transition->order->inventory_reservation_reference) {
+            $this->releaseCancelledOrderReservation($transition->order);
         }
 
-        if (! $current->canTransitionTo($next)) {
-            throw new InvalidStatusTransitionException(
-                currentStatus: $current->value,
-                allowed: array_map(
-                    fn (OrderStatus $status) => $status->value,
-                    $current->allowedTransitions(),
-                ),
-                message: "Cannot change order status from {$current->value} to {$next->value}.",
-            );
-        }
-
-        $updatedOrder = $this->orderRepository->updateStatus($order, $next);
-        OrderStatusChanged::dispatch($updatedOrder, $current, $next);
-
-        // Stock restoration is owned by Inventory, never by the Orders database.
-        if ($next === OrderStatus::Cancelled && $updatedOrder->inventory_reservation_reference) {
-            $this->releaseCancelledOrderReservation($updatedOrder);
-        }
-
-        return $updatedOrder;
+        return $transition->order;
     }
 
 

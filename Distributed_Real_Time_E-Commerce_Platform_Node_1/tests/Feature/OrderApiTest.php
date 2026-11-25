@@ -3,7 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Modules\Identity\Domain\Entities\User as DomainUser;
+use App\Modules\Orders\Application\Contracts\OrderRepositoryInterface;
+use App\Modules\Orders\Domain\Entities\Order;
+use App\Modules\Orders\Domain\Enums\OrderStatus;
+use App\Shared\Contracts\InventoryGatewayInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OrderApiTest extends TestCase
@@ -59,9 +65,7 @@ class OrderApiTest extends TestCase
         $adminHeaders = $this->authHeaders($admin);
 
         $this->patchJson("/api/v1/orders/{$orderId}/status", ['status' => 'Delivered'], $adminHeaders)
-            ->assertStatus(422)
-            ->assertJsonPath('error.code', 'INVALID_STATUS_TRANSITION')
-            ->assertJsonPath('error.details.allowed', ['Confirmed', 'Cancelled']);
+            ->assertStatus(409);
 
         foreach (['Confirmed', 'Shipped', 'Delivered'] as $status) {
             $this->patchJson("/api/v1/orders/{$orderId}/status", ['status' => $status], $adminHeaders)
@@ -79,15 +83,55 @@ class OrderApiTest extends TestCase
         $customer = User::factory()->create();
         $admin = User::factory()->responsible()->create();
         $product = $this->makeProduct(['stock' => 10]);
+        $this->mock(InventoryGatewayInterface::class, function ($mock) {
+            $mock->shouldReceive('reserveStock')->once();
+            $mock->shouldReceive('releaseStock')
+                ->once()
+                ->withArgs(fn (string $reference) => $reference !== '');
+        });
 
         $orderId = $this->postJson('/api/v1/orders', ['items' => [['product_id' => $product->id, 'quantity' => 4]]], $this->authHeaders($customer))
             ->json('data.id');
-        $this->assertSame(6, $product->fresh()->stock);
 
         $this->patchJson("/api/v1/orders/{$orderId}/status", ['status' => 'Cancelled'], $this->authHeaders($admin))
             ->assertOk();
 
-        $this->assertSame(10, $product->fresh()->stock);
+        $this->patchJson("/api/v1/orders/{$orderId}/status", ['status' => 'Cancelled'], $this->authHeaders($admin))
+            ->assertStatus(409);
+
+        $this->assertDatabaseCount('order_status_outbox', 1);
+        $this->assertDatabaseHas('order_status_outbox', [
+            'order_id' => $orderId,
+            'event_type' => 'order.status_changed',
+            'from_status' => 'Pending',
+            'to_status' => 'Cancelled',
+        ]);
+    }
+
+    public function test_status_transition_uses_the_locked_database_state_not_a_stale_model(): void
+    {
+        $customer = DomainUser::factory()->create();
+        $order = Order::query()->create([
+            'user_id' => $customer->id,
+            'status' => OrderStatus::Pending,
+            'total_amount' => '10.00',
+        ]);
+        $staleOrder = $order->replicate();
+        $staleOrder->id = $order->id;
+
+        DB::table('orders')->where('id', $order->id)->update(['status' => OrderStatus::Confirmed->value]);
+
+        $result = $this->app->make(OrderRepositoryInterface::class)
+            ->transitionStatus($staleOrder->id, OrderStatus::Shipped);
+
+        $this->assertSame(OrderStatus::Confirmed, $result->fromStatus);
+        $this->assertSame(OrderStatus::Shipped, $result->toStatus);
+        $this->assertSame(OrderStatus::Shipped, $result->order->status);
+        $this->assertDatabaseHas('order_status_outbox', [
+            'order_id' => $order->id,
+            'from_status' => 'Confirmed',
+            'to_status' => 'Shipped',
+        ]);
     }
 
     public function test_status_change_notifies_the_order_owner(): void
