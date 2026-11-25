@@ -35,14 +35,14 @@ final class OrdersServiceProvider extends ServiceProvider
     {
         Gate::policy(Order::class, OrderPolicy::class);
 
-        RateLimiter::for('orders-create', function (Request $request) {
-            $key = $request->user()?->id ?? $request->ip();
+        // RateLimiter::for('orders-create', function (Request $request) {
+        //     $key = $request->user()?->id ?? $request->ip();
 
-            return [
-                Limit::perMinute(10)->by('orders:'.$key),
-                Limit::perHour(100)->by('orders-h:'.$key),
-            ];
-        });
+        //     return [
+        //         Limit::perMinute(10)->by('orders:'.$key),
+        //         Limit::perHour(100)->by('orders-h:'.$key),
+        //     ];
+        // });
 
         Route::middleware('api')
             ->prefix('api/v1')

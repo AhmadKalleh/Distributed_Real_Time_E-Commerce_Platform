@@ -1,0 +1,30 @@
+Failover Test Result (stopping a replica during load)
+======================================================
+URL: http://localhost:8080 | VUs: 20 | Duration: 75s
+
+Total requests       : 6531
+Failed requests      : 0 (0.0%)
+Status codes         : 200x6474  201x57
+Response time ms     : avg 29.1 | p95 49.2 | max 2021.9
+Error timestamps     : no errors
+Slow requests (>1000ms): none
+
+---------- Requests served per instance ----------
+Windows (seconds since load start): BEFORE 0-15 | DURING 15-35 (instance stopped) | AFTER 35-end (instance restarted). Boundaries are approximate (about 1-2s).
+
+Instance              BEFORE    DURING     AFTER
+ecommerce-api-3    425 (33%) 851 (50%)1428 (41%)
+ecommerce-api-1    433 (33%) 865 (50%)1380 (39%)
+ecommerce-api-2    439 (34%)    0 (0%) 710 (20%)
+Total                   1297      1716      3518
+Errors                     0         0         0
+
+Retried by Nginx: 4 requests (first instance failed, another served it), between 15.1s and 38.8s
+
+How to read: BEFORE all instances share the load. DURING the stopped instance drops to about zero
+and the others absorb its traffic with no errors. AFTER it returns and receives requests again
+(a lower share at first, because the restarted container needs time to boot).
+
+Successful orders    : 57
+Expected Mailpit msgs: 114  (2 emails per order)
+Actual               : (from Mailpit) ______

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:api', StickyReadAfterWrite::class])->group(function () {
     Route::get('orders', [OrderController::class, 'index']);
-    Route::post('orders', [OrderController::class, 'store'])->middleware('throttle:orders-create');
+    Route::post('orders', [OrderController::class, 'store']);//->middleware('throttle:orders-create');
     Route::get('orders/{order}', [OrderController::class, 'show'])->whereNumber('order');
     Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->whereNumber('order');
 });

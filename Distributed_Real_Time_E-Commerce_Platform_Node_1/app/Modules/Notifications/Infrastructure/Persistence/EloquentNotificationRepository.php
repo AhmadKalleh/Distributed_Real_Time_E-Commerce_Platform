@@ -5,6 +5,8 @@ namespace App\Modules\Notifications\Infrastructure\Persistence;
 use App\Modules\Notifications\Application\Contracts\NotificationRepositoryInterface;
 use App\Modules\Notifications\Domain\Entities\UserNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 final class EloquentNotificationRepository implements NotificationRepositoryInterface
 {
@@ -39,5 +41,39 @@ final class EloquentNotificationRepository implements NotificationRepositoryInte
         $notification->update(['read_at' => now()]);
 
         return $notification;
+    }
+
+    public function reserveEmailDelivery(int $notificationId): bool
+    {
+        $now = now();
+
+        return DB::table('notification_email_deliveries')->insertOrIgnore([
+            'notification_id' => (string) $notificationId,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]) === 1;
+    }
+
+    public function markEmailDeliverySent(int $notificationId): void
+    {
+        $updated = DB::table('notification_email_deliveries')
+            ->where('notification_id', (string) $notificationId)
+            ->whereNull('sent_at')
+            ->update([
+                'sent_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+        if ($updated !== 1) {
+            throw new RuntimeException("Email delivery reservation for notification {$notificationId} was not found.");
+        }
+    }
+
+    public function releaseEmailDelivery(int $notificationId): void
+    {
+        DB::table('notification_email_deliveries')
+            ->where('notification_id', (string) $notificationId)
+            ->whereNull('sent_at')
+            ->delete();
     }
 }
