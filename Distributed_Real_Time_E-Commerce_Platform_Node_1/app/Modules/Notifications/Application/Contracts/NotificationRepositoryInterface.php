@@ -18,4 +18,10 @@ interface NotificationRepositoryInterface
     ): UserNotification;
 
     public function markAsRead(UserNotification $notification): UserNotification;
+
+    public function reserveEmailDelivery(int $notificationId): bool;
+
+    public function markEmailDeliverySent(int $notificationId): void;
+
+    public function releaseEmailDelivery(int $notificationId): void;
 }

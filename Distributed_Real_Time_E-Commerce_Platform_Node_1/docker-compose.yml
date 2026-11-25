@@ -15,12 +15,10 @@ x-rabbitmq-env: &rabbitmq-env
     RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD:-ecommerce-local-pass}"
 
 services:
-    app:
+    app1: &app
         build: .
         image: ecommerce-api
-        container_name: ecommerce-api
-        ports:
-            - "${APP_PORT:-8080}:80"
+        container_name: ecommerce-api-1
         environment:
             APP_NAME: "E-Commerce API"
             APP_ENV: production
@@ -40,7 +38,7 @@ services:
             DB_DATABASE: ecommerce
             DB_USERNAME: ecommerce
             DB_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
-            INVENTORY_GRPC_TARGET: "${INVENTORY_GRPC_TARGET:-host.docker.internal:50051}"
+            INVENTORY_GRPC_TARGET: "host.docker.internal:50051"
             CACHE_DRIVER: redis
             REDIS_CLIENT: predis
             REDIS_HOST: redis
@@ -67,7 +65,25 @@ services:
             mysql-replica:
                 condition: service_healthy
         restart: unless-stopped
+    app2:
+        <<: *app
+        container_name: ecommerce-api-2
+    app3:
+        <<: *app
+        container_name: ecommerce-api-3
 
+    nginx:
+        image: nginx:1.27-alpine
+        container_name: ecommerce-nginx
+        ports:
+            - "${APP_PORT:-8080}:80"
+        volumes:
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            - app1
+            - app2
+            - app3
+        restart: unless-stopped
     mysql-primary:
         image: mysql:8.0
         container_name: ecommerce-db-primary
@@ -167,6 +183,15 @@ services:
             - "6001:6001"
         restart: unless-stopped
 
+    mailpit:
+        image: axllent/mailpit:latest
+        container_name: ecommerce-mailpit
+        ports:
+            - "8025:8025"   # واجهة الويب
+            - "1025:1025"   # SMTP
+        restart: unless-stopped
+
+
     worker-email:
         build: .
         image: ecommerce-api
@@ -178,11 +203,26 @@ services:
             CACHE_DRIVER: array
             SESSION_DRIVER: array
             QUEUE_CONNECTION: sync
+
+            DB_CONNECTION: mysql
+            DB_HOST: mysql-primary
+            DB_PORT: 3306
+            DB_READ_HOST: mysql-replica
+            DB_READ_PORT: 3306
+            DB_WRITE_HOST: mysql-primary
+            DB_WRITE_PORT: 3306
+            DB_DATABASE: ecommerce
+            DB_USERNAME: ecommerce
+            DB_PASSWORD: "${DB_PASSWORD:-ecommerce-local-pass}"
+
             <<: [*mail-env, *rabbitmq-env]
         depends_on:
+            mysql-primary:
+                condition: service_healthy
             rabbitmq:
                 condition: service_healthy
         restart: unless-stopped
+
 
     relay:
         build: .
@@ -209,7 +249,7 @@ services:
         depends_on:
             mysql-primary:
                 condition: service_healthy
-            app:
+            app1:
                 condition: service_started
         restart: unless-stopped
 

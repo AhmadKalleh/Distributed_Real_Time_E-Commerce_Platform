@@ -1,0 +1,16 @@
+Email Idempotency & Deduplication Test Result
+================================================
+URL: http://localhost:8080 | Mailpit: http://localhost:8025 | VUs: 15 | Duration: 45s
+
+Total HTTP requests  : 2136
+Failed requests      : 124 (5.8%)
+Status codes         : 200x1580  201x432  409x124
+Response time ms     : avg 66.3 | p95 245.1 | max 307.3
+
+Successful orders    : 432
+Emails per order     : 2
+Expected new emails  : 864
+Actual new emails    : (check Mailpit diff below or at http://localhost:8025)
+
+Idempotency check    : If Actual new emails == Expected new emails (864),
+                       no duplicate emails were sent despite retries/worker restarts.

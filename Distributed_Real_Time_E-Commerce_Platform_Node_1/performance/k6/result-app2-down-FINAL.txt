@@ -1,0 +1,51 @@
+Load Test Result: After (app2 stopped)
+====================================
+Target URL       : http://localhost:8080
+Virtual Users    : 20
+
+[Browse Categories]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 42.8 | med 39.0 | p95 88.3 | max 117.7
+  Status codes: 200x50
+
+[Browse Products]  (planned 200 | sent 200 | errors 0)
+  Response time ms: avg 43.0 | med 39.9 | p95 68.5 | max 110.3
+  Status codes: 200x200
+
+[Product Detail]  (planned 150 | sent 150 | errors 0)
+  Response time ms: avg 52.3 | med 49.9 | p95 78.1 | max 99.1
+  Status codes: 200x150
+
+[Create Product (Admin)]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 107.2 | med 100.1 | p95 153.3 | max 170.1
+  Status codes: 201x50
+
+[Create Order]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 288.9 | med 283.4 | p95 334.3 | max 345.2
+  Status codes: 201x50
+
+[Browse Orders]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 47.2 | med 46.0 | p95 65.7 | max 71.6
+  Status codes: 200x50
+
+[Order Detail]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 53.9 | med 53.6 | p95 77.6 | max 85.1
+  Status codes: 200x50
+
+---------- Summary ----------
+Requests sent        : 600 of 600
+Failed requests      : 0 (0.0%)
+Main phase duration  : 2.2s (excluding setup)
+Throughput           : 269.5 req/s
+All requests (ms)    : avg 72.4 | med 49.2 | p95 279.8 | max 345.2
+
+---------- Requests per instance (from X-Served-By) ----------
+app1  : 306 requests (51.0%) | avg 70.7 ms | p95 275.8 ms
+app3  : 294 requests (49.0%) | avg 74.3 ms | p95 281.9 ms
+Instances used      : 2
+Balance (max/min)   : 1.0  (1.0 = perfectly even)
+Retried by Nginx    : 0 requests
+
+---------- Manual Post-Run Verification ----------
+Expected Mailpit msgs : 106  = (50 orders + 3 seed) * 2
+Actual                : (from Mailpit) ______
+Queues notification.email and notification.email.dlq: expected 0 and 0

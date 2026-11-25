@@ -1,0 +1,43 @@
+Load Test Result: Before (single instance)
+====================================
+Target URL       : http://localhost:8080
+Virtual Users    : 20
+
+[Browse Categories]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 209.0 | med 74.7 | p95 709.4 | max 717.1
+  Status codes: 200x50
+
+[Browse Products]  (planned 200 | sent 200 | errors 0)
+  Response time ms: avg 30.7 | med 29.8 | p95 43.5 | max 61.1
+  Status codes: 200x200
+
+[Product Detail]  (planned 150 | sent 150 | errors 0)
+  Response time ms: avg 59.6 | med 51.9 | p95 131.3 | max 184.6
+  Status codes: 200x150
+
+[Create Product (Admin)]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 110.6 | med 109.4 | p95 142.7 | max 156.7
+  Status codes: 201x50
+
+[Create Order]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 355.3 | med 333.1 | p95 475.9 | max 488.1
+  Status codes: 201x50
+
+[Browse Orders]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 58.2 | med 56.0 | p95 85.8 | max 89.7
+  Status codes: 200x50
+
+[Order Detail]  (planned 50 | sent 50 | errors 0)
+  Response time ms: avg 41.6 | med 38.4 | p95 57.0 | max 85.6
+  Status codes: 200x50
+
+---------- Summary ----------
+Requests sent        : 600 of 600
+Failed requests      : 0 (0.0%)
+Main phase duration  : 2.7s (excluding setup)
+Throughput           : 220.8 req/s
+
+---------- Manual Post-Run Verification ----------
+Expected Mailpit msgs : 106  = (50 orders + 3 seed) * 2
+Actual                : (from Mailpit) ______
+Queues notification.email and notification.email.dlq: expected 0 and 0
